@@ -89,19 +89,7 @@ def visualize_graph(Weights_matrix, path):
         rotate=True)
     plot.show()
 
-###
-def inds_of_max(M):
-    max_ = -math.inf
-    for i in range(len(M)):
-        for j in range(len(M[i])):
-            for elem in M[i][j]:
-                if elem > max_: max_ = elem
-    inds = []
-    for i in range(len(M)):
-        for j in range(len(M[i])):
-            for k in range(len(M[i][j])):
-                if M[i][j][k] == max_: inds.append((i,j,k))
-    return inds, max_
+
 
 def Hamming_distance(R1,R2):#вход: матрицы одинаковой размерности только из 1 и 0
     R1 = np.array(R1)
@@ -110,9 +98,9 @@ def Hamming_distance(R1,R2):#вход: матрицы одинаковой ра�
     iscorrect2 = np.all((R2 == 0) + (R2 == 1))
     if R1.shape != R2.shape or not iscorrect1 or not iscorrect2:
         raise ValueError()
-        return None
-    disparity = list(map(abs,R1-R2))
+    disparity = list(map(abs, R1-R2))
     return sum(sum(disparity))
+
 def sum_of_distances(R, ListOfOtherR):
     #вторым параметром - список матриц смежности
     return sum([Hamming_distance(R,Ri) for Ri in ListOfOtherR])
@@ -139,20 +127,20 @@ def path_sum_distance(vertices_list, R_list):
     R = make_single_R_profile_matrix(vertices_list)
     return sum_of_distances(R, R_list)
 
-def Paths_weights_matrix(Paths_matrix, Weights_matrix):
+def Paths_lenghts_matrix(Paths_matrix, Weights_matrix):
     return [ [
-        [path_weight(path, Weights_matrix)
-         for path in Paths_matrix[i][j]]
+        [ path_weight(path, Weights_matrix)
+        for path in Paths_matrix[i][j] ]
         for j in range(n)] for i in range(n)]
 def Paths_strengths_matrix(Paths_matrix, Weights_matrix):
     return [ [
-        [path_strength(path, Weights_matrix)
-         for path in Paths_matrix[i][j]]
+        [ path_strength(path, Weights_matrix)
+         for path in Paths_matrix[i][j] ]
         for j in range(n)] for i in range(n)]
 def Paths_sum_distances_matrix(Paths_matrix, R_list):
     return [ [
-        [path_sum_distance(path, R_list)
-         for path in Paths_matrix[i][j]]
+        [ path_sum_distance(path, R_list)
+         for path in Paths_matrix[i][j] ]
         for j in range(n)] for i in range(n)]
 
 def Paths_weights_list(Paths_list, Weights_matrix):
@@ -226,6 +214,7 @@ def Make_used_matrices(list_of_profiles):#аргумент: матрицы n*n, 
     return (R_list, P, C, R)
 ###
 
+
 def All_various_rankings():
     def permutations_of_elements(elements):
         return [ list(p) for p in itertools.permutations(elements) ]
@@ -236,23 +225,28 @@ def All_various_rankings():
         for i in range(n):
             for j in range(n):
                 if i != j:
-                    if n > 2:
-                        middle_vetrices = [v for v in range(n) if v!=i and v!=j]
-                        for p in permutations_of_elements(middle_vetrices):
-                            Rankings.append([i] + p + [j])
-                    elif n == 2:
-                        Rankings.append([i] + [j])
+                    middle_vetrices = [v for v in range(n) if v!=i and v!=j]
+                    for p in permutations_of_elements(middle_vetrices):
+                        Rankings.append([i] + p + [j])
+                    # if n > 2:
+                    #     middle_vetrices = [v for v in range(n) if v!=i and v!=j]
+                    #     for p in permutations_of_elements(middle_vetrices):
+                    #         Rankings.append([i] + p + [j])
+                    # elif n == 2:
+                    #     Rankings.append([i] + [j])
     return Rankings
+
 
 def Linear_medians(R_list):
     All_rankings = All_various_rankings()
     Distances = Paths_sum_distances_list(All_rankings, R_list)
-    Dmin = min(Distances)
+    median_dist = min(Distances)
     Rankings_list = [ All_rankings[i] for i in range(len(All_rankings))
-                      if Distances[i] == Dmin ]
-    return Rankings_list, Dmin
+                      if Distances[i] == median_dist ]
+    return Rankings_list, median_dist
 
-def hamiltonian_paths_through_matrix_degree(Weights_matrix):
+
+def Hamiltonian_paths_through_matrix_degree(Weights_matrix):
     def F_zeroing(M,S):
         n = len(M)#квадратная матрица
         for i in range(n):
@@ -327,23 +321,39 @@ def hamiltonian_paths_through_matrix_degree(Weights_matrix):
                     Paths_matrix[i][j].append([i] + [j])
     return Paths_matrix
 
+
+def inds_of_max(M):
+    max_elem = -math.inf
+    for i in range(len(M)):
+        for j in range(len(M[i])):
+            for elem in M[i][j]:
+                if elem > max_elem: max_elem = elem
+    indices_of_max_elems = []
+    for i in range(len(M)):
+        for j in range(len(M[i])):
+            for k in range(len(M[i][j])):
+                if M[i][j][k] == max_elem: indices_of_max_elems.append((i,j,k))
+    return (indices_of_max_elems, max_elem)
+
 def HP_max_length(Weights_matrix):
-    Paths_matrix = hamiltonian_paths_through_matrix_degree(Weights_matrix)
-    PL = Paths_weights_matrix(Paths_matrix, Weights_matrix)
-    inds, max_length = inds_of_max(PL)
+    Paths_matrix = Hamiltonian_paths_through_matrix_degree(Weights_matrix)
+    indices, max_length = inds_of_max(
+        Paths_lenghts_matrix(Paths_matrix, Weights_matrix)
+        )
     #матрица длиннейших путей - longest paths (LP)
     LP_matrix = [[[] for j in range(n)] for i in range(n)]
-    for (i,j,k) in inds:
+    for (i,j,k) in indices:
         LP_matrix[i][j].append(Paths_matrix[i][j][k])
     return Rankings_list(LP_matrix)
 
 def HP_max_strength(Weights_matrix):
-    Paths_matrix = hamiltonian_paths_through_matrix_degree(Weights_matrix)
-    PS = Paths_strengths_matrix(Paths_matrix, Weights_matrix)
-    inds, max_strength= inds_of_max(PS)
+    Paths_matrix = Hamiltonian_paths_through_matrix_degree(Weights_matrix)
+    indices, max_strength= inds_of_max(
+        Paths_strengths_matrix(Paths_matrix, Weights_matrix)
+        )
     #матрица сильнейших путей - strongest paths (SP)
     SP_matrix = [[[] for j in range(n)] for i in range(n)]
-    for (i,j,k) in inds:
+    for (i,j,k) in indices:
         SP_matrix[i][j].append(Paths_matrix[i][j][k])
     return Rankings_list(SP_matrix)
 
@@ -357,8 +367,7 @@ def Schulze_method(Weights_matrix):
 ##                return False
 ##        return True
     def all_simple_paths_betweenAB(Adjacency_list, idA, idB):
-        #simple - без циклов
-        Paths = []
+        Paths = []#simple - без циклов
         if idA != idB:
             n = len(Adjacency_list)
             cur_path = []
@@ -425,8 +434,7 @@ def Schulze_method(Weights_matrix):
             if B != A and Power[A][B] < Power[B][A]:
                 return False
         return True
-    #set of winners
-    S = [ A for A in range(n) if is_winner(A)]
+    S = [ A for A in range(n) if is_winner(A)]#set of winners
     #матрица строгих сравнений A>B <=> comparsion[A][B]=1
     #должна быть транзитивна A>B and B>C => A>C
     comparsion = [[ 1 if compare_MORETHAN(i,j) else 0
@@ -438,14 +446,16 @@ def Schulze_method(Weights_matrix):
                     if compare_MORETHAN(i,k) and compare_MORETHAN(k,j):
                         comparsion[i][j] = 1
     ranking = []
-    if sum([sum(c) for c in comparsion]) == (n**2 - n)/2:
+    if sum([sum(c) for c in comparsion]) == (n**2 - n)/2:#количество единиц при транзитивности
         ranking = [i for i in range(n)]#результирующее ранжирование по Шульце
         ranking.reverse()
         for i in range(n):
             j = i
             while j > 0 and comparsion[ranking[j]][ranking[j-1]]:
                 ranking[j], ranking[j-1] = ranking[j-1], ranking[j]
-                j -= 1           
+                j -= 1
+    else:
+        ranking = None
 ##    ranking = [i for i in range(n)]#результирующее ранжирование по Шульце
 ##    ranking.reverse()
 ##    for i in range(n):
@@ -458,74 +468,83 @@ def Schulze_method(Weights_matrix):
     return S, ranking
 
 def Execute_algorythms(list_of_profiles):
-    Methods_names = ['HP_max_length',
-                     'HP_max_strength',
-                     'Schulze_method',
-                     'Linear_medians',
-                     'All_rankings']
-    Methods_frames = [frame_table_HP_max_length,
-                      frame_table_HP_max_strength,
-                      frame_table_Schulze_method,
-                      frame_table_Linear_medians,
-                      frame_table_All_rankings]
-    Methods_checkbuttons = [ _HP_max_length.get(),
-                             _HP_max_strength.get(),
-                             _Schulze_method.get(),
-                             _Linear_medians.get(),
-                             _All_rankings.get() ]
-    Frames = {
-        Methods_names[i]:Methods_frames[i]
-        for i in range(len(Methods_names))
+    names = [
+        'HP_max_length',
+        'HP_max_strength',
+        'Schulze_method',
+        'Linear_medians',
+        'All_rankings']
+    frames = [
+        frame_table_HP_max_length,
+        frame_table_HP_max_strength,
+        frame_table_Schulze_method,
+        frame_table_Linear_medians,
+        frame_table_All_rankings]
+    checkbuttons = [ 
+        cb_HP_max_length.get(),
+        cb_HP_max_strength.get(),
+        cb_Schulze_method.get(),
+        cb_Linear_medians.get(),
+        cb_All_rankings.get() ]
+    Methods_frames = {
+        names[i]:frames[i]
+        for i in range(len(names))
         }
-    Checkbuttons = {
-        Methods_names[i]:Methods_checkbuttons[i]
-        for i in range(len(Methods_names))
+    Methods_checkbuttons = {
+        names[i]:checkbuttons[i]
+        for i in range(len(names))
         }
-    Rankings = {
-        Methods_names[i]:None 
-        for i in range(len(Methods_names))
+    Methods_rankings = {
+        names[i]:None 
+        for i in range(len(names))
         }
     
     R_list, P, C, R = Make_used_matrices(list_of_profiles)
-    Params = {'R_list':R_list, 'P':P, 'C':C, 'R':R, 'median_dist':None,
-              'Schulze_ranking':None, 'Schulze_winners':None}
+    Params = {
+        'R_list':R_list, 'P':P, 'C':C, 'R':R, 
+        'median_dist':None,
+        'Schulze_ranking':None, 
+        'Schulze_winners':None}
 
-    if sum(Methods_checkbuttons):
-        _, Params['median_dist'] = Linear_medians(R_list)
-        if Checkbuttons['HP_max_length']:
-            Rankings['HP_max_length'] = HP_max_length(C)
-        if Checkbuttons['HP_max_strength']:
-            Rankings['HP_max_strength'] = HP_max_strength(C)
-        if Checkbuttons['Schulze_method']:
-            Params['Schulze_winners'], 
-            Params['Schulze_ranking'] = Schulze_method(C)
-            Rankings['Schulze_method'] = [Params['Schulze_ranking']]
-        if Checkbuttons['Linear_medians']:
-            Rankings['Linear_medians'], 
-            Params['median_dist'] =  Linear_medians(R_list)
-        if Checkbuttons['All_rankings']:
-            Rankings['All_rankings'] = All_various_rankings()
-        Intersect = []
-        if sum(Methods_checkbuttons) > 1:
-            div = "*"
+    if sum(checkbuttons):
+        _useless, Params['median_dist'] = Linear_medians(R_list)
+        if Methods_checkbuttons['HP_max_length']:
+            Methods_rankings['HP_max_length'] = HP_max_length(C)
+        if Methods_checkbuttons['HP_max_strength']:
+            Methods_rankings['HP_max_strength'] = HP_max_strength(C)
+        if Methods_checkbuttons['Schulze_method']:
+            Params['Schulze_winners'], Params['Schulze_ranking'] = \
+                Schulze_method(C)
+            if Params['Schulze_ranking'] != None:
+                Methods_rankings['Schulze_method'] = [ Params['Schulze_ranking'] ]
+        if Methods_checkbuttons['Linear_medians']:
+            Methods_rankings['Linear_medians'], Params['median_dist'] =  \
+                Linear_medians(R_list)
+        if Methods_checkbuttons['All_rankings']:
+            Methods_rankings['All_rankings'] = All_various_rankings()
+        Intersect = None
+        if sum(checkbuttons) > 1:
+            separator = "*"
             def list2symbolic_string(l):
                 s = ""
                 if l == []:
                     return s
                 for e in l:
-                    s += str(e) + div
-                return s[:-len(div)]
+                    s += str(e) + separator
+                return s[:-len(separator)]
             def symbolic_string2list(s):
-                l = s.split(div)
-                l = [int(e) for e in l]
+                l = [int(e) for e in s.split(separator)]
                 return l
-            Sets = [ set( list2symbolic_string(l) for l in rankings )
-                     for rankings in Rankings.values()
-                     if rankings not in ([], [[]], None) ]
+            Sets = [ 
+                set( 
+                    list2symbolic_string(ranking) 
+                    for ranking in single_method_rankings if ranking != None)
+                for single_method_rankings in Methods_rankings.values()
+                if single_method_rankings not in ([], [[]], None) ]
             if Sets not in ([], None):
                 Intersect = set.intersection(*Sets)
-                Intersect = [ symbolic_string2list(s) for s in Intersect]
-        print_result_rankings(Frames, Params, Rankings, Intersect)
+                Intersect = [ symbolic_string2list(s) for s in Intersect ]
+        print_result_rankings(Params, Methods_frames, Methods_rankings, Intersect)
 ##        visualize_graph(C, None)
     else:
         messagebox.showwarning("", "Выберите метод")
@@ -587,44 +606,41 @@ def matrix2string(Matrix):#для удобства печати матриц
     return string
 ###
 
-def print_result_rankings(Frames, Params,
-                          Methods_rankings, Mutual_rankings):
+def print_result_rankings(
+    Params, Methods_frames, Methods_rankings, Mutual_rankings):
     R_list = Params['R_list']
     Weights_matrix = Params['C']
-    text = "Минимальное суммарное расстояние Хэмминга\n" + \
-           "для мажоритарного графа: {}".format(
-               sum_of_distances(Params['R'], R_list))
-    label_output['text'] = text
+    label_output['text'] = \
+        "Минимальное суммарное расстояние Хэмминга\n\
+            для мажоритарного графа: {}".format(
+                sum_of_distances(Params['R'], R_list))
     for name in Methods_rankings:
-        if Methods_rankings[name] != None:
-            table_frame = Frames[name]
-            Result_rankings = Methods_rankings[name]
-            if Result_rankings not in [None, [], [[]]]:
-                Lengths = Paths_weights_list(Result_rankings, Weights_matrix)
-                Strengths = Paths_strengths_list(Result_rankings, Weights_matrix)
-                Distances = Paths_sum_distances_list(Result_rankings, R_list)
-                new_table_output(table_frame, Result_rankings,
-                                Lengths, Strengths, Distances,
-                                Params['median_dist'], Mutual_rankings)
-            if name == 'Schulze_method':
-                print_winners(table_frame,
-                            Params['Schulze_winners'],
-                            Params['Schulze_ranking'])
+        Result_rankings = Methods_rankings[name]
+        if Result_rankings != None:
+            Lengths = Paths_weights_list(Result_rankings, Weights_matrix)
+            Strengths = Paths_strengths_list(Result_rankings, Weights_matrix)
+            Distances = Paths_sum_distances_list(Result_rankings, R_list)
+            new_table_output(Methods_frames[name], Result_rankings,
+                            Lengths, Strengths, Distances,
+                            Params['median_dist'], Mutual_rankings)
+        if name == 'Schulze_method' and Params['Schulze_winners'] != None:
+            print_winners(Methods_frames[name], 
+            Params['Schulze_winners'], Params['Schulze_ranking'])
 
-def print_winners(table_frame, winners, ranking):
-    T = ""
-    if ranking in [None, []]: T += "Ранжирование невозможно. "
-    T += "Победители:"      
-    lbl = Label(table_frame, **label_opts, **border_opts, anchor=E,
-                text=T)
-    lbl.grid(**grid_optsE, row=n+4, column=0)
+def print_winners(frame_of_method, winners, ranking):
+    text = ""
+    if ranking == None: text += "Ранжирование невозможно. "
+    text += "Победители:"      
+    label_text = Label(
+        frame_of_method, **label_opts, **border_opts, anchor=E, text=text)
+    label_text.grid(**grid_optsE, row=n+4, column=0)
     
-    winnrs = Label(table_frame, **label_opts, **relief_opts, padx=3,
+    label_winners = Label(frame_of_method, **label_opts, **relief_opts, padx=3,
                    text=list2string([index2symbol(w, n-1)
                                      for w in winners]) )
-    winnrs.grid(**grid_optsW, row=n+4, column=1)
-    table_frame.grid()
-    frame_table_output.grid()
+    label_winners.grid(**grid_optsW, row=n+4, column=1)
+    frame_of_method.grid()
+    frame_output_all_tables.grid()
     change_fieldsize_for_scrolling()
 
 def read_table():
@@ -658,34 +674,35 @@ def read_table():
     else:
         Execute_algorythms(table_values.transpose())
 
-def new_table_output(table_frame, Result_rankings,
+def new_table_output(frame_of_method, Result_rankings,
                      Lengths, Strengths, Distances,
                      median_dist, Mutual_rankings):
     global labels_columns_out, labels_rankings_out, table_output, \
            label_L, label_S, label_D, table_info_output
     ### задание управляющих элементов
     r = len(Result_rankings)
-    labels_columns_out = [Label(table_frame, **label_smallfont_opts,
+    labels_columns_out = [Label(frame_of_method, **label_smallfont_opts,
                                 **border_opts,
                                 text="Ранжи-\nрование {0}".format(j+1))
                     for j in range(r)]
-    labels_rankings_out = [Label(table_frame, **label_opts, **border_opts,
+    labels_rankings_out = [Label(frame_of_method, **label_opts, **border_opts,
                                   text="Место {0}".format(i+1))
                             for i in range(n)]
     cell_opts = {'width':5, **relief_opts}
-    table_output = [[ Label(table_frame, **cell_opts, **input_field_opts,
+    table_output = [[ Label(frame_of_method, **cell_opts, **input_field_opts,
                             anchor=W, padx=2)
                      for j in range(r)]
                     for i in range(n)]
-    label_L = Label(table_frame, **label_opts, **border_opts,
+    label_L = Label(frame_of_method, **label_opts, **border_opts,
                     text="Длина:")
-    label_S = Label(table_frame, **label_opts, **border_opts,
+    label_S = Label(frame_of_method, **label_opts, **border_opts,
                     text="Сила:")
-    label_D = Label(table_frame, **label_smallfont_opts, **border_opts,
+    label_D = Label(frame_of_method, **label_smallfont_opts, **border_opts,
                     justify=LEFT, text="Суммарное расстояние\nХэмминга:")
-    table_info_output = [[Label(table_frame, **label_opts, **cell_opts)
+    table_info_output = [[Label(frame_of_method, **label_opts, **cell_opts)
                           for j in range(r)]
                          for i in range(3)]
+                         
     def min_and_max(List):
         inf = float("inf")
         L = [elem for elem in List if abs(elem) != inf]
@@ -699,34 +716,36 @@ def new_table_output(table_frame, Result_rankings,
     color_min = '#BBEEFF'
     color_max = '#EEBBFF'
     color_mutual = '#CCFFCC'
-    def highlight_characteristic(Characteristic, Ch_index, j):
+    def highlight_characteristic(Characteristic, ranking_index, Ch_index):
         Ch_min = MinsMaxes[Ch_index][0]
         Ch_max = MinsMaxes[Ch_index][1]
         if Ch_min != Ch_max:
-            if Characteristic[j] == Ch_min:
-                table_info_output[Ch_index][j]['background'] = color_min
-            if Characteristic[j] == Ch_max:
-                table_info_output[Ch_index][j]['background'] = color_max
-    
+            if Characteristic[ranking_index] == Ch_min:
+                table_info_output[Ch_index][ranking_index]['background'] = color_min
+            if Characteristic[ranking_index] == Ch_max:
+                table_info_output[Ch_index][ranking_index]['background'] = color_max
+    def highlight_mutual_ranking(Result_rankings, ranking_index, Mutual_rankings):
+        if Mutual_rankings != None and \
+            Result_rankings[ranking_index] in Mutual_rankings:
+            for i in range(len(Result_rankings[ranking_index])):
+                table_output[i][ranking_index]['background'] = color_mutual
+
     for j in range(r):
         for i in range(len(Result_rankings[j])):
-            table_output[i][j]['text'] = index2symbol(
-                Result_rankings[j][i], n-1)
-        if Result_rankings[j] in Mutual_rankings:
-            for i in range(len(Result_rankings[j])):
-                table_output[i][j]['background'] = color_mutual
+            table_output[i][j]['text'] = index2symbol(Result_rankings[j][i], n-1)
         table_info_output[0][j]['text'] = Lengths[j]
         table_info_output[1][j]['text'] = Strengths[j]
         table_info_output[2][j]['text'] = Distances[j]
-        highlight_characteristic(Lengths, 0, j)
-        highlight_characteristic(Strengths, 1, j)
-        highlight_characteristic(Distances, 2, j)
+        highlight_mutual_ranking(Result_rankings, j, Mutual_rankings)
+        highlight_characteristic(Lengths, j, 0)
+        highlight_characteristic(Strengths, j, 1)
+        highlight_characteristic(Distances, j, 2)
         if Distances[j] == median_dist:
             table_info_output[2][j]['text'] += "\nМедиана"
             table_info_output[2][j]['width'] = len("Медиана")
             table_info_output[2][j].config(**smallfont_opts)
     
-    grid_output_table(table_frame)
+    grid_output_table(frame_of_method)
 
 def new_table_input():
     global table_input, labels_columns_inp, labels_rankings_inp, table_fromfile
@@ -735,7 +754,7 @@ def new_table_input():
         spinbox_m.set(str(m))
     except Exception:
         pass
-    table_frame = frame_table_input
+    table_frame = frame_input_profiles
     ### задание управляющих элементов      
     labels_columns_inp = [Label(table_frame, **label_smallfont_opts,
                                 **border_opts,
@@ -820,18 +839,18 @@ def read_n_and_m():
         messagebox.showwarning("", "Введите кооректные данные.\n" + str(e))
 
 def grid_forget_input():### уборка управляющих элементов
-    for item in frame_table_input.grid_slaves():
+    for item in frame_input_profiles.grid_slaves():
         item.grid_forget()
-    frame_table_input.grid_remove()
+    frame_input_profiles.grid_remove()
     change_fieldsize_for_scrolling()
     
 def grid_forget_output():### уборка управляющих элементов
-    for frame in frame_table_output.grid_slaves():
+    for frame in frame_output_all_tables.grid_slaves():
         for item in frame.grid_slaves():
             item.grid_forget()
         frame.grid_remove()
     label_output.grid_remove()
-    frame_table_output.grid_remove()
+    frame_output_all_tables.grid_remove()
     change_fieldsize_for_scrolling()
     
 def grid_input_table():### размещение управляющих элементов
@@ -846,7 +865,7 @@ def grid_input_table():### размещение управляющих элем�
         for i in range(len(table_input)):
             for j in range(len(table_input[i])):
                 table_input[i][j].grid(**pad0, row = i+1, column = j+1)
-    frame_table_input.grid()
+    frame_input_profiles.grid()
     change_fieldsize_for_scrolling()
 
 def grid_output_table(frame_of_particular_method):### размещение управляющих элементов
@@ -876,7 +895,7 @@ def grid_output_table(frame_of_particular_method):### размещение уп�
                 table_info_output[i][j].grid(**pad0, 
                                             row = n + i+1, column = j+1)
     frame_of_particular_method.grid()
-    frame_table_output.grid()
+    frame_output_all_tables.grid()
     if label_output['text'] != "": label_output.grid()
     change_fieldsize_for_scrolling()
        
@@ -1057,27 +1076,27 @@ frame_checkbuttons.grid(**grid_optsW, row = 0, column = 1)
 frame_forfile = LabelFrame(frame1up, **label_opts, text="Импорт из txt-файла")
 frame_forfile.grid(**grid_optsNSEW, row = 1, column = 0, columnspan = 3)
 
-frame_table_input = LabelFrame(frame1down, **label_opts,
+frame_input_profiles = LabelFrame(frame1down, **label_opts,
                                text="Ввод таблицы ранжирований")
-frame_table_input.grid(**grid_optsNW, row = 0, column = 0)
+frame_input_profiles.grid(**grid_optsNW, row = 0, column = 0)
 
-frame_table_output = LabelFrame(frame2, **label_opts, relief='flat',
+frame_output_all_tables = LabelFrame(frame2, **label_opts, relief='flat',
                      text="Результирующие ранжирования")
-frame_table_output.grid(**grid_optsNW, row = 0, column = 1)
+frame_output_all_tables.grid(**grid_optsNW, row = 0, column = 1)
 
-frame_table_HP_max_length = LabelFrame(frame_table_output, **label_opts,
+frame_table_HP_max_length = LabelFrame(frame_output_all_tables, **label_opts,
                      text="Гамильтоновы пути максимальной длины")
 frame_table_HP_max_length.grid(**grid_optsNW, row = 0, column = 0)
-frame_table_HP_max_strength = LabelFrame(frame_table_output, **label_opts,
+frame_table_HP_max_strength = LabelFrame(frame_output_all_tables, **label_opts,
                      text="Гамильтоновы пути наибольшей силы")
 frame_table_HP_max_strength.grid(**grid_optsNW, row = 1, column = 0)
-frame_table_Schulze_method = LabelFrame(frame_table_output, **label_opts,
+frame_table_Schulze_method = LabelFrame(frame_output_all_tables, **label_opts,
                      text="Ранжирование по алгоритму Шульце")
 frame_table_Schulze_method.grid(**grid_optsNW, row = 2, column = 0)
-frame_table_Linear_medians = LabelFrame(frame_table_output, **label_opts,
+frame_table_Linear_medians = LabelFrame(frame_output_all_tables, **label_opts,
                      text="Линейные медианы")
 frame_table_Linear_medians.grid(**grid_optsNW, row = 3, column = 0)
-frame_table_All_rankings= LabelFrame(frame_table_output, **label_opts,
+frame_table_All_rankings= LabelFrame(frame_output_all_tables, **label_opts,
                      text="Всевозможные ранжирования")
 frame_table_All_rankings.grid(**grid_optsNW, row = 4, column = 0)
 
@@ -1112,32 +1131,32 @@ button_read_n_and_m.grid(**pad3, sticky = W+E,
                          row = 2, column = 0,
                          columnspan = 2)
 
-_HP_max_length = IntVar()
-_HP_max_strength = IntVar()
-_Schulze_method = IntVar()
-_Linear_medians = IntVar()
-_All_rankings = IntVar()
+cb_HP_max_length = IntVar()
+cb_HP_max_strength = IntVar()
+cb_Schulze_method = IntVar()
+cb_Linear_medians = IntVar()
+cb_All_rankings = IntVar()
 
-_HP_max_length.set(0)
-_HP_max_strength.set(0)
-_Schulze_method.set(0)
-_Linear_medians.set(0)
-_All_rankings.set(0)
+cb_HP_max_length.set(0)
+cb_HP_max_strength.set(0)
+cb_Schulze_method.set(0)
+cb_Linear_medians.set(0)
+cb_All_rankings.set(0)
 
 checkbutton_opts = {'master':frame_checkbuttons, **label_opts}
-checkbutton1 = Checkbutton(**checkbutton_opts, variable=_HP_max_length,
+checkbutton1 = Checkbutton(**checkbutton_opts, variable=cb_HP_max_length,
                            text = "Гамильтоновы пути максимальной длины"
                            ).pack(**pack_optsTW)
-checkbutton2 = Checkbutton(**checkbutton_opts, variable=_HP_max_strength,
+checkbutton2 = Checkbutton(**checkbutton_opts, variable=cb_HP_max_strength,
                            text = "Гамильтоновы пути наибольшей силы",
                            ).pack(**pack_optsTW)
-checkbutton3 = Checkbutton(**checkbutton_opts, variable=_Schulze_method,
+checkbutton3 = Checkbutton(**checkbutton_opts, variable=cb_Schulze_method,
                            text = "Ранжирование по алгоритму Шульце",
                            ).pack(**pack_optsTW)
-checkbutton4 = Checkbutton(**checkbutton_opts, variable=_Linear_medians,
+checkbutton4 = Checkbutton(**checkbutton_opts, variable=cb_Linear_medians,
                            text = "Линейные медианы",
                            ).pack(**pack_optsTW)
-checkbutton5 = Checkbutton(**checkbutton_opts, variable=_All_rankings,
+checkbutton5 = Checkbutton(**checkbutton_opts, variable=cb_All_rankings,
                            text = "Всевозможные ранжирования",
                            ).pack(**pack_optsTW)
 
