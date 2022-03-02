@@ -101,7 +101,7 @@ def Hamming_distance(R1,R2):#вход: матрицы одинаковой ра�
     disparity = list(map(abs, R1-R2))
     return sum(sum(disparity))
 
-def sum_of_distances(R, ListOfOtherR):
+def sum_Hamming_distance(R, ListOfOtherR):
     #вторым параметром - список матриц смежности
     return sum([Hamming_distance(R,Ri) for Ri in ListOfOtherR])
 
@@ -116,6 +116,7 @@ def weights_of_path(vertices_list, Weights_matrix):
                         for i in range(l-1)]
     return weights_list
 
+
 def path_weight(vertices_list, Weights_matrix):
     return sum(weights_of_path(vertices_list, Weights_matrix))
 def path_strength(vertices_list, Weights_matrix):
@@ -125,7 +126,8 @@ def path_strength(vertices_list, Weights_matrix):
     return min(W)
 def path_sum_distance(vertices_list, R_list):
     R = make_single_R_profile_matrix(vertices_list)
-    return sum_of_distances(R, R_list)
+    return sum_Hamming_distance(R, R_list)
+
 
 def Paths_lenghts_matrix(Paths_matrix, Weights_matrix):
     return [ [
@@ -142,6 +144,7 @@ def Paths_sum_distances_matrix(Paths_matrix, R_list):
         [ path_sum_distance(path, R_list)
          for path in Paths_matrix[i][j] ]
         for j in range(n)] for i in range(n)]
+
 
 def Paths_weights_list(Paths_list, Weights_matrix):
     return [ path_weight(path, Weights_matrix)
@@ -613,7 +616,7 @@ def print_result_rankings(
     label_output['text'] = \
         "Минимальное суммарное расстояние Хэмминга\n\
             для мажоритарного графа: {}".format(
-                sum_of_distances(Params['R'], R_list))
+                sum_Hamming_distance(Params['R'], R_list))
     for name in Methods_rankings:
         Result_rankings = Methods_rankings[name]
         if Result_rankings != None:
