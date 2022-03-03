@@ -206,8 +206,7 @@ def matrix2adjacency_list(Weights_matrix):
 
 
 def make_sum_R_profile_matrix(weight_C_matrix):  # adjacency_matrix
-    R = [[1 if
-          abs(weight_C_matrix[i][j]) != math.inf
+    R = [[1 if abs(weight_C_matrix[i][j]) != math.inf
           else 0
           for j in range(n)] for i in range(n)]
     return R
@@ -306,8 +305,7 @@ def Hamiltonian_paths_through_matrix_degree(Weights_matrix):
         return M
 
     n = len(Weights_matrix)
-    Q = [[0 if (abs(Weights_matrix[i][j]) == math.inf or
-                Weights_matrix[i][j] == 0)
+    Q = [[0 if (abs(Weights_matrix[i][j]) == math.inf)
           else 1
           for j in range(n)]
          for i in range(n)]
@@ -349,7 +347,9 @@ def Hamiltonian_paths_through_matrix_degree(Weights_matrix):
 
                     for sym_path in some_sym_paths:
                         Paths_matrix[i][j].append(
-                            [i] + list(map(lambda x: sym2ind[x], sym_path.args)) + [j])
+                            list(map(lambda x: sym2ind[x],
+                                     (ind2sym[i]*sym_path*ind2sym[j]).args))
+                        )
                 elif n == 2:
                     Paths_matrix[i][j].append([i] + [j])
     return Paths_matrix
@@ -580,8 +580,8 @@ def Execute_algorythms(list_of_profiles):
             if Sets not in ([], None):
                 Intersect = set.intersection(*Sets)
                 Intersect = [symbolic_string2list(s) for s in Intersect]
-        print_result_rankings(Params, Methods_frames,
-                              Methods_rankings, Intersect)
+        draw_result_rankings(Params, Methods_frames,
+                             Methods_rankings, Intersect)
 ##        visualize_graph(C, None)
     else:
         messagebox.showwarning("", "Выберите метод")
@@ -648,7 +648,7 @@ def matrix2string(Matrix):  # для удобства печати матриц
 ###
 
 
-def print_result_rankings(
+def draw_result_rankings(
         Params, Methods_frames, Methods_rankings, Mutual_rankings):
     R_list = Params['R_list']
     Weights_matrix = Params['C']
@@ -667,11 +667,11 @@ def print_result_rankings(
                              Lengths, Strengths, Distances,
                              Params['median_dist'], Mutual_rankings)
         if name == 'Schulze_method' and Params['Schulze_winners'] != None:
-            print_winners(Methods_frames[name],
-                          Params['Schulze_winners'], Params['Schulze_ranking'])
+            draw_winners(Methods_frames[name],
+                         Params['Schulze_winners'], Params['Schulze_ranking'])
 
 
-def print_winners(frame_of_method, winners, ranking):
+def draw_winners(frame_of_method, winners, ranking):
     text = ""
     if ranking == None:
         text += "Ранжирование невозможно. "
