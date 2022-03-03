@@ -91,7 +91,8 @@ def visualize_graph(Weights_matrix, path):
 
 
 
-def Hamming_distance(R1,R2):#вход: матрицы одинаковой размерности только из 1 и 0
+def Hamming_distance(R1,R2):
+    #вход: матрицы одинаковой размерности только из 1 и 0
     R1 = np.array(R1)
     R2 = np.array(R2)
     iscorrect1 = np.all((R1 == 0) + (R1 == 1))
@@ -101,78 +102,88 @@ def Hamming_distance(R1,R2):#вход: матрицы одинаковой ра�
     disparity = list(map(abs, R1-R2))
     return sum(sum(disparity))
 
-def sum_Hamming_distance(R, ListOfOtherR):
+def sum_Hamming_distance(R, List_of_other_R):
     #вторым параметром - список матриц смежности
-    return sum([Hamming_distance(R,Ri) for Ri in ListOfOtherR])
+    return sum([Hamming_distance(R, R_other) for R_other in List_of_other_R])
 
 def weights_of_path(vertices_list, Weights_matrix):
+    weights_list = []
     l = len(vertices_list)
-    if l == 0 :
-        weights_list = []
-    if l == 1:#путь (a) "ничего не делать" - нет пути, так как нет петли
-        weights_list = []
+    #при l = 0 нет пути
+    #при l = 1 путь (a) "ничего не делать" - нет пути, так как нет петли
     if l > 1:#включает и путь-петлю (a,a)
-        weights_list = [Weights_matrix[vertices_list[i]][vertices_list[i+1]]
-                        for i in range(l-1)]
+        weights_list = [ 
+            Weights_matrix[vertices_list[i]][vertices_list[i+1]] 
+            for i in range(l-1)]
     return weights_list
 
 
-def path_weight(vertices_list, Weights_matrix):
+def path_length(vertices_list, Weights_matrix):
     return sum(weights_of_path(vertices_list, Weights_matrix))
+
 def path_strength(vertices_list, Weights_matrix):
-    W = weights_of_path(vertices_list, Weights_matrix)
-    if W == []:
+    wp = weights_of_path(vertices_list, Weights_matrix)
+    if wp == []:
         return -math.inf
-    return min(W)
-def path_sum_distance(vertices_list, R_list):
-    R = make_single_R_profile_matrix(vertices_list)
-    return sum_Hamming_distance(R, R_list)
+    return min(wp)
+
+def path_sum_Hamming_distance(vertices_list, R_list):
+    return sum_Hamming_distance(
+        make_single_R_profile_matrix(vertices_list), R_list)
 
 
 def Paths_lenghts_matrix(Paths_matrix, Weights_matrix):
     return [ [
-        [ path_weight(path, Weights_matrix)
+        [ path_length(path, Weights_matrix)
         for path in Paths_matrix[i][j] ]
         for j in range(n)] for i in range(n)]
+
 def Paths_strengths_matrix(Paths_matrix, Weights_matrix):
     return [ [
         [ path_strength(path, Weights_matrix)
          for path in Paths_matrix[i][j] ]
         for j in range(n)] for i in range(n)]
-def Paths_sum_distances_matrix(Paths_matrix, R_list):
+
+def Paths_sum_Hamming_distances_matrix(Paths_matrix, R_list):
     return [ [
-        [ path_sum_distance(path, R_list)
+        [ path_sum_Hamming_distance(path, R_list)
          for path in Paths_matrix[i][j] ]
         for j in range(n)] for i in range(n)]
 
 
 def Paths_weights_list(Paths_list, Weights_matrix):
-    return [ path_weight(path, Weights_matrix)
+    return [ path_length(path, Weights_matrix)
              for path in Paths_list]
+
 def Paths_strengths_list(Paths_list, Weights_matrix):
     return [ path_strength(path, Weights_matrix)
              for path in Paths_list]
-def Paths_sum_distances_list(Paths_list, R_list):
-    return [ path_sum_distance(path, R_list)
+
+def Paths_sum_Hamming_distances_list(Paths_list, R_list):
+    return [ path_sum_Hamming_distance(path, R_list)
              for path in Paths_list]
 
-def Paths_matrix(Rankings_list):
+
+def Paths_list2matrix(Paths_list):
     PM = [[ [] for j in range(n)] for i in range(n)]
-    for ranking in Rankings_list:
-        i = ranking[0]
-        j = ranking[-1]
-        PM[i][j].append(ranking)
+    for path in Paths_list:
+        i = path[0]
+        j = path[-1]
+        PM[i][j].append(path)
     return PM
-def Rankings_list(Paths_matrix):
-    RL = []
+
+def Paths_matrix2list(Paths_matrix):
+    PL = []
     if n == 1:
-        RL.append([0])
+        PL.append([0])
     else:
         for i in range(n):
             for j in range(n):
                 for paths in Paths_matrix[i][j]:
-                    if type(paths) == list: RL.append(paths)
-    return RL
+                    if type(paths) == list: 
+                        PL.append(paths)
+    return PL
+
 
 def matrix2adjacency_list(Weights_matrix):
     n = len(Weights_matrix)#квадратная матрица
@@ -184,36 +195,44 @@ def matrix2adjacency_list(Weights_matrix):
                 Adjacency_list[i].append(j)
     return Adjacency_list
 
-def make_aggregated_R_profile_matrix(weight_C_matrix):#adjacency_matrix
+
+def make_sum_R_profile_matrix(weight_C_matrix):#adjacency_matrix
     R = [[ 1 if
            abs(weight_C_matrix[i][j]) != math.inf
            else 0
            for j in range(n)] for i in range(n)]
     return R
+
 def make_weight_C_matrix(summarized_P_matrix):
     C = [[ -math.inf if
            i == j or summarized_P_matrix[i][j] < summarized_P_matrix[j][i]
            else summarized_P_matrix[i][j] - summarized_P_matrix[j][i]
            for j in range(n)] for i in range(n)]
     return C
+
 def make_summarized_P_matrix(list_of_R_matrices):
-    P = np.array([[0 for j in range(n)] for i in range(n)])
+    P = np.zeros((n,n))
     for Rj in list_of_R_matrices:
         P += np.array(Rj)
     return P.tolist()
+
 def make_single_R_profile_matrix(single_profile):
+    l = len(single_profile)
+    if l != n or l != len(np.unique(single_profile)):
+        return None
     profile = np.array(single_profile)
-    Rj = [[0 for j in range(n)] for i in range(n)]
-    for i in range(len(profile)):
-        p = profile[i]
-        for p2 in profile[i+1:]:
-            Rj[p][p2] = 1
-    return Rj#adjacency_matrix
+    Rj = [[0 for j in range(l)] for i in range(l)]
+    for i in range(l):
+        candidate = profile[i]
+        for candidate_2 in profile[i+1:]:
+            Rj[candidate][candidate_2] = 1
+    return Rj #adjacency_matrix
+
 def Make_used_matrices(list_of_profiles):#аргумент: матрицы n*n, их m штук
     R_list = [make_single_R_profile_matrix(p) for p in list_of_profiles]
     P = make_summarized_P_matrix(R_list)
     C = make_weight_C_matrix(P)
-    R = make_aggregated_R_profile_matrix(C)
+    R = make_sum_R_profile_matrix(C)
     return (R_list, P, C, R)
 ###
 
@@ -242,7 +261,7 @@ def All_various_rankings():
 
 def Linear_medians(R_list):
     All_rankings = All_various_rankings()
-    Distances = Paths_sum_distances_list(All_rankings, R_list)
+    Distances = Paths_sum_Hamming_distances_list(All_rankings, R_list)
     median_dist = min(Distances)
     Rankings_list = [ All_rankings[i] for i in range(len(All_rankings))
                       if Distances[i] == median_dist ]
@@ -347,7 +366,7 @@ def HP_max_length(Weights_matrix):
     LP_matrix = [[[] for j in range(n)] for i in range(n)]
     for (i,j,k) in indices:
         LP_matrix[i][j].append(Paths_matrix[i][j][k])
-    return Rankings_list(LP_matrix)
+    return Paths_matrix2list(LP_matrix)
 
 def HP_max_strength(Weights_matrix):
     Paths_matrix = Hamiltonian_paths_through_matrix_degree(Weights_matrix)
@@ -358,7 +377,7 @@ def HP_max_strength(Weights_matrix):
     SP_matrix = [[[] for j in range(n)] for i in range(n)]
     for (i,j,k) in indices:
         SP_matrix[i][j].append(Paths_matrix[i][j][k])
-    return Rankings_list(SP_matrix)
+    return Paths_matrix2list(SP_matrix)
 
 def Schulze_method(Weights_matrix):
 ##    def is_chain_correct_Schulze(vertices_list, Weights_matrix):
@@ -489,17 +508,18 @@ def Execute_algorythms(list_of_profiles):
         cb_Schulze_method.get(),
         cb_Linear_medians.get(),
         cb_All_rankings.get() ]
+    methods_num = len(names)
     Methods_frames = {
         names[i]:frames[i]
-        for i in range(len(names))
+        for i in range(methods_num)
         }
     Methods_checkbuttons = {
         names[i]:checkbuttons[i]
-        for i in range(len(names))
+        for i in range(methods_num)
         }
     Methods_rankings = {
         names[i]:None 
-        for i in range(len(names))
+        for i in range(methods_num)
         }
     
     R_list, P, C, R = Make_used_matrices(list_of_profiles)
@@ -526,7 +546,13 @@ def Execute_algorythms(list_of_profiles):
         if Methods_checkbuttons['All_rankings']:
             Methods_rankings['All_rankings'] = All_various_rankings()
         Intersect = None
-        if sum(checkbuttons) > 1:
+        
+        is_rankings_of_method_exist = np.where( 
+            np.array(list(Methods_rankings.values())) != None, 
+            [1 for i in range(methods_num)], 
+            [0 for i in range(methods_num)] 
+            )
+        if sum(is_rankings_of_method_exist) > 1:
             separator = "*"
             def list2symbolic_string(l):
                 s = ""
@@ -622,7 +648,7 @@ def print_result_rankings(
         if Result_rankings != None:
             Lengths = Paths_weights_list(Result_rankings, Weights_matrix)
             Strengths = Paths_strengths_list(Result_rankings, Weights_matrix)
-            Distances = Paths_sum_distances_list(Result_rankings, R_list)
+            Distances = Paths_sum_Hamming_distances_list(Result_rankings, R_list)
             new_table_output(Methods_frames[name], Result_rankings,
                             Lengths, Strengths, Distances,
                             Params['median_dist'], Mutual_rankings)
