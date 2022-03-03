@@ -69,7 +69,8 @@ def Hamiltonian_paths_through_matrix_degree(Weights_matrix):
     H = np.array([[ ind2sym[j] if Q[i][j] == 1 else int(0)
         for j in range(n)] 
         for i in range(n)])
-
+    
+    print("H\n", H, "\n")
     print("Q\n", Q, "\n")
     for i in range(2, n):
         Q_quote = H.dot(Q)
@@ -89,7 +90,9 @@ def Hamiltonian_paths_through_matrix_degree(Weights_matrix):
 
                     for sym_path in some_sym_paths:
                         Paths_matrix[i][j].append(
-                            [i] + list(map(lambda x: sym2ind[x], sym_path.args)) + [j])
+                            list(map(lambda x: sym2ind[x], 
+                            (ind2sym[i]*sym_path*ind2sym[j]).args))
+                            )
                 elif n == 2:
                     Paths_matrix[i][j].append([i] + [j])
     return Paths_matrix
