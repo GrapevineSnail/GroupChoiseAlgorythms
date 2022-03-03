@@ -41,8 +41,9 @@ def Hamiltonian_paths_through_matrix_degree(Weights_matrix):
         return M
 
     n = len(Weights_matrix)
-    Q = [[0 if (abs(Weights_matrix[i][j]) == math.inf or
-                Weights_matrix[i][j] == 0)
+    # Q = [[0 if (abs(Weights_matrix[i][j]) == math.inf or
+    #             Weights_matrix[i][j] == 0)
+    Q = [[0 if (abs(Weights_matrix[i][j]) == math.inf)
           else 1
           for j in range(n)]
          for i in range(n)]
@@ -121,36 +122,36 @@ def many_vertices_lists2symbolic_paths(paths):
 
 def main():
     inf = math.inf
-    Weights_matrix = [[0, 0, 1, 0],
-                      [1, 0, 0, 1],
-                      [0, 1, 0, 0],
-                      [1, 0, 1, 0]]
+    Weights_matrix = [[inf, inf, 1, inf],
+                      [1, inf, inf, 1],
+                      [inf, 1, inf, inf],
+                      [1, inf, 1, inf]]
     # ans:
     # acbd,
     # bdac,
     # cbda,
     # dcba, dacb
     
-    # Weights_matrix = [[0]]
+    # Weights_matrix = [[inf]]
     
-    # Weights_matrix = [[0, 1],
-    #                   [0, 0]]
+    # Weights_matrix = [[inf, 1],
+    #                   [inf, 0]]
     #ans: ab
 
-    # Weights_matrix = [[0, 1],
+    # Weights_matrix = [[inf, 1],
     #                   [1, 0]]
     #ans: ab, ba
 
-    # Weights_matrix = [[0, 1, 1],
-    #                   [0, 0, 1],
-    #                   [0, 0, 0]]
+    # Weights_matrix = [[inf, 1, 1],
+    #                   [inf, inf, 1],
+    #                   [inf, inf, 0]]
     #ans: abc
 
-    # Weights_matrix = [[0, 0, 26, 30, 0],
-    #                   [25, 0, 0, 33, 0],
-    #                   [0, 29, 0, 0, 24],
-    #                   [0, 0, 28, 0, 0],
-    #                   [23, 27, 0, 31, 0]]
+    # Weights_matrix = [[inf, inf, 26, 30, inf],
+    #                   [25, inf, inf, 33, inf],
+    #                   [inf, 29, inf, inf, 24],
+    #                   [inf, inf, 28, inf, inf],
+    #                   [23, 27, inf, 31, inf]]
     # ans:
     # adceb,acebd,
     # bdcea,baced,badce,
@@ -158,9 +159,9 @@ def main():
     # dceba,
     # edcba,eadcb,ebadc,eacbd,
 
-    # Weights_matrix = [[0, 1, 1],
-    #                   [1, 0, 1],
-    #                   [1, 1, 0]]
+    # Weights_matrix = [[inf, 1, 1],
+    #                   [1, inf, 1],
+    #                   [1, 1, inf]]
     # ans:
     # ['', 'A>C>B', 'A>B>C']
     # ['B>C>A', '', 'B>A>C']
@@ -180,17 +181,17 @@ def main():
     #                   [inf, inf, 1, 1]]
     # ans: abcd, dcba
 
-    # Weights_matrix = [[1, 0, 0, 0],
-    #                   [0, 1, 0, 0],
-    #                   [0, 0, 1, 0],
-    #                   [0, 0, 0, 1]]
+    # Weights_matrix = [[1, inf, inf, inf],
+    #                   [inf, 1, inf, inf],
+    #                   [inf, inf, 1, inf],
+    #                   [inf, inf, inf, 1]]
     # ans: ---
 
-    # Weights_matrix = [[0, 0, 0, 1, 1],
-    #                 [1, 0, 1, 0, 1],
-    #                 [1, 0, 0, 1, 0],
-    #                 [0, 1, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0]]
+    # Weights_matrix = [[inf, inf, inf, 1, 1],
+    #                 [1, inf, 1, inf, 1],
+    #                 [1, inf, inf, 1, inf],
+    #                 [inf, 1, inf, inf, inf],
+    #                 [inf, inf, inf, inf, inf]]
     # ans: cadbe, cdbae, dbcae
 
     paths_matrix = Hamiltonian_paths_through_matrix_degree(Weights_matrix)
