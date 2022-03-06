@@ -649,13 +649,12 @@ def matrix2string(Matrix):  # для удобства печати матриц
 
 
 def draw_result_rankings(
-        Params, Methods_frames, Methods_rankings, Mutual_rankings):
+    Params, Methods_frames, Methods_rankings, Mutual_rankings):
     R_list = Params['R_list']
     Weights_matrix = Params['C']
-    label_output['text'] = \
-        "Минимальное суммарное расстояние Хэмминга\n\
+    label_output['text'] = "Минимальное суммарное расстояние Хэмминга\n\
             для мажоритарного графа: {}".format(
-        sum_Hamming_distance(Params['R'], R_list))
+                sum_Hamming_distance(Params['R'], R_list))
     for name in Methods_rankings:
         Result_rankings = Methods_rankings[name]
         if Result_rankings != None:
@@ -1051,6 +1050,10 @@ canvas1.config(
 scrollbarY1.pack(side=RIGHT, fill=Y)
 scrollbarX1.pack(side=BOTTOM, fill=X)
 canvas1.pack(side=LEFT, expand=YES, fill=BOTH)
+def on_mousewheel(event):
+    canvas1.yview_scroll(int(-1*(event.delta/100)), "units")
+canvas1.bind_all("<MouseWheel>", on_mousewheel, add='+')
+
 # главный фрейм
 frame0 = Frame(canvas1, bd=0, background=window_background,
                width=canvas1.winfo_width(), height=canvas1.winfo_height())
