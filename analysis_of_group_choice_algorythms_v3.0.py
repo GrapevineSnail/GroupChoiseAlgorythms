@@ -515,16 +515,13 @@ def Execute_algorythms(list_of_profiles):
         cb_All_rankings.get()]
     methods_num = len(names)
     Methods_frames = {
-        names[i]: frames[i]
-        for i in range(methods_num)
+        names[i]: frames[i] for i in range(methods_num)
     }
     Methods_checkbuttons = {
-        names[i]: checkbuttons[i]
-        for i in range(methods_num)
+        names[i]: checkbuttons[i] for i in range(methods_num)
     }
     Methods_rankings = {
-        names[i]: None
-        for i in range(methods_num)
+        names[i]: None for i in range(methods_num)
     }
 
     R_list, P, C, R = Make_used_matrices(list_of_profiles)
@@ -544,7 +541,7 @@ def Execute_algorythms(list_of_profiles):
             Params['Schulze_winners'], Params['Schulze_ranking'] = \
                 Schulze_method(C)
             if Params['Schulze_ranking'] != None:
-                Methods_rankings['Schulze_method'] = [
+                Methods_rankings['Schulze_method'] = [ 
                     Params['Schulze_ranking']]
         if Methods_checkbuttons['Linear_medians']:
             Methods_rankings['Linear_medians'], Params['median_dist'] =  \
@@ -649,12 +646,12 @@ def matrix2string(Matrix):  # для удобства печати матриц
 
 
 def draw_result_rankings(
-    Params, Methods_frames, Methods_rankings, Mutual_rankings):
+        Params, Methods_frames, Methods_rankings, Mutual_rankings):
     R_list = Params['R_list']
     Weights_matrix = Params['C']
     label_output['text'] = "Минимальное суммарное расстояние Хэмминга\n\
-            для мажоритарного графа: {}".format(
-                sum_Hamming_distance(Params['R'], R_list))
+для мажоритарного графа: {}".format(
+        sum_Hamming_distance(Params['R'], R_list))
     for name in Methods_rankings:
         Result_rankings = Methods_rankings[name]
         if Result_rankings != None:
@@ -689,7 +686,7 @@ def draw_winners(frame_of_method, winners, ranking):
 
 
 def read_table():
-    global table_input, labels_columns_inp
+    global table_input, labels_captions_top_inp
     grid_forget_output()
     window0.focus()
     try:
@@ -701,10 +698,10 @@ def read_table():
                                   for j in range(m)] for i in range(n)])
 
         def elem_j_accepted(j):
-            labels_columns_inp[j].config(background=window_background)
+            labels_captions_top_inp[j].config(background=window_background)
 
         def elem_j_incorrect(j):
-            labels_columns_inp[j].config(background=error_color)
+            labels_captions_top_inp[j].config(background=error_color)
         number_of_accepted_elements = 0
         values = [i for i in range(n)]
         for j in range(m):
@@ -725,28 +722,28 @@ def read_table():
 def new_table_output(frame_of_method, Result_rankings,
                      Lengths, Strengths, Distances,
                      median_dist, Mutual_rankings):
-    global labels_columns_out, labels_rankings_out, table_output, \
-        label_L, label_S, label_D, table_info_output
+    global labels_captions_top_out, labels_captions_left_out, table_output, \
+        table_info_output, labels_info_out
     # задание управляющих элементов
     r = len(Result_rankings)
-    labels_columns_out = [Label(frame_of_method, **label_smallfont_opts,
-                                **border_opts,
-                                text="Ранжи-\nрование {0}".format(j+1))
-                          for j in range(r)]
-    labels_rankings_out = [Label(frame_of_method, **label_opts, **border_opts,
-                                 text="Место {0}".format(i+1))
-                           for i in range(n)]
+    labels_captions_top_out = [Label(frame_of_method, **label_smallfont_opts,
+                                     **border_opts,
+                                     text="Ранжи-\nрование {0}".format(j+1))
+                               for j in range(r)]
+    labels_captions_left_out = [Label(frame_of_method, **label_opts, **border_opts,
+                                      text="Место {0}".format(i+1))
+                                for i in range(n)]
     cell_opts = {'width': 5, **relief_opts}
     table_output = [[Label(frame_of_method, **cell_opts, **input_field_opts,
                            anchor=W, padx=2)
                      for j in range(r)]
                     for i in range(n)]
-    label_L = Label(frame_of_method, **label_opts, **border_opts,
-                    text="Длина:")
-    label_S = Label(frame_of_method, **label_opts, **border_opts,
-                    text="Сила:")
-    label_D = Label(frame_of_method, **label_smallfont_opts, **border_opts,
-                    justify=LEFT, text="Суммарное расстояние\nХэмминга:")
+    labels_info_out = [
+        Label(frame_of_method, **label_opts, **border_opts, text="Длина:"),
+        Label(frame_of_method, **label_opts, **border_opts, text="Сила:"),
+        Label(frame_of_method, **label_smallfont_opts, **border_opts,
+              justify=LEFT, text="Суммарное расстояние\nХэмминга:")
+    ]
     table_info_output = [[Label(frame_of_method, **label_opts, **cell_opts)
                           for j in range(r)]
                          for i in range(3)]
@@ -800,7 +797,7 @@ def new_table_output(frame_of_method, Result_rankings,
 
 
 def new_table_input():
-    global table_input, labels_columns_inp, labels_rankings_inp, table_fromfile
+    global table_input, labels_captions_top_inp, labels_captions_left_inp, table_fromfile
     try:
         spinbox_n.set(str(n))
         spinbox_m.set(str(m))
@@ -808,13 +805,13 @@ def new_table_input():
         pass
     table_frame = frame_input_profiles
     # задание управляющих элементов
-    labels_columns_inp = [Label(table_frame, **label_smallfont_opts,
-                                **border_opts,
-                                text="Эксперт {0}".format(j+1))
-                          for j in range(m)]
-    labels_rankings_inp = [Label(table_frame, **label_opts, **border_opts,
-                                 text="Место {0}".format(i+1))
-                           for i in range(n)]
+    labels_captions_top_inp = [Label(table_frame, **label_smallfont_opts,
+                                     **border_opts,
+                                     text="Эксперт {0}".format(j+1))
+                               for j in range(m)]
+    labels_captions_left_inp = [Label(table_frame, **label_opts, **border_opts,
+                                      text="Место {0}".format(i+1))
+                                for i in range(n)]
     table_input = [[ttk.Combobox(table_frame, **input_field_opts, width=4,
                                  values=[index2symbol(i, n-1)
                                          for i in range(n)],
@@ -896,7 +893,7 @@ def read_n_and_m():
 
 def grid_forget_input():  # уборка управляющих элементов
     for item in frame_input_profiles.grid_slaves():
-        item.grid_forget()
+        item.grid_remove()
     frame_input_profiles.grid_remove()
     change_fieldsize_for_scrolling()
 
@@ -904,21 +901,24 @@ def grid_forget_input():  # уборка управляющих элементо
 def grid_forget_output():  # уборка управляющих элементов
     for frame in frame_output_all_tables.grid_slaves():
         for item in frame.grid_slaves():
-            item.grid_forget()
+            item.grid_remove()
+        frame.update()
         frame.grid_remove()
     label_output.grid_remove()
+    frame_output_all_tables.update()
     frame_output_all_tables.grid_remove()
     change_fieldsize_for_scrolling()
 
 
 def grid_input_table():  # размещение управляющих элементов
-    global labels_columns_inp, labels_rankings_inp, table_input
-    if 'labels_columns_inp' in globals():
-        for j in range(len(labels_columns_inp)):
-            labels_columns_inp[j].grid(**pad0, row=0, column=j+1)
-    if 'labels_rankings_inp' in globals():
-        for i in range(len(labels_rankings_inp)):
-            labels_rankings_inp[i].grid(**pad0, row=i+1, column=0)
+    global labels_captions_top_inp, labels_captions_left_inp, \
+        table_input
+    if 'labels_captions_top_inp' in globals():
+        for j in range(len(labels_captions_top_inp)):
+            labels_captions_top_inp[j].grid(**pad0, row=0, column=j+1)
+    if 'labels_captions_left_inp' in globals():
+        for i in range(len(labels_captions_left_inp)):
+            labels_captions_left_inp[i].grid(**pad0, row=i+1, column=0)
     if 'table_input' in globals():
         for i in range(len(table_input)):
             for j in range(len(table_input[i])):
@@ -927,23 +927,21 @@ def grid_input_table():  # размещение управляющих элем�
     change_fieldsize_for_scrolling()
 
 
-def grid_output_table(frame_of_particular_method):  # размещение управляющих элементов
-    global labels_columns_out, labels_rankings_out, table_output, \
-        label_L, label_S, label_D, table_info_output
-    if 'labels_columns_out' in globals():
-        for j in range(len(labels_columns_out)):
-            labels_columns_out[j].grid(**pad0, row=0, column=j+1)
-    if 'labels_rankings_out' in globals():
-        n = len(labels_rankings_out)
+# размещение управляющих элементов
+def grid_output_table(frame_of_particular_method: Widget):
+    global labels_captions_top_out, labels_captions_left_out, \
+        table_output, labels_info_out, table_info_output
+    if 'labels_captions_top_out' in globals():
+        for j in range(len(labels_captions_top_out)):
+            labels_captions_top_out[j].grid(**pad0, row=0, column=j+1)
+    if 'labels_captions_left_out' in globals():
+        n = len(labels_captions_left_out)
         for i in range(n):
-            labels_rankings_out[i].grid(**pad0, sticky=E,
-                                        row=i+1, column=0)
-        if 'label_L' in globals():
-            label_L.grid(**grid_optsE, row=n+1, column=0)
-        if 'label_S' in globals():
-            label_S.grid(**grid_optsE, row=n+2, column=0)
-        if 'label_D' in globals():
-            label_D.grid(**grid_optsE, row=n+3, column=0)
+            labels_captions_left_out[i].grid(
+                **pad0, sticky=E, row=i+1, column=0)
+        if 'labels_info_out' in globals():
+            for i in range(3):
+                labels_info_out[i].grid(**grid_optsE, row=n+1+i, column=0)
     if 'table_output' in globals():
         for i in range(len(table_output)):
             for j in range(len(table_output[i])):
@@ -951,8 +949,7 @@ def grid_output_table(frame_of_particular_method):  # размещение уп�
     if 'table_info_output' in globals():
         for i in range(len(table_info_output)):
             for j in range(len(table_info_output[i])):
-                table_info_output[i][j].grid(**pad0,
-                                             row=n + i+1, column=j+1)
+                table_info_output[i][j].grid(**pad0, row=n+1+i, column=j+1)
     frame_of_particular_method.grid()
     frame_output_all_tables.grid()
     if label_output['text'] != "":
@@ -960,15 +957,11 @@ def grid_output_table(frame_of_particular_method):  # размещение уп�
     change_fieldsize_for_scrolling()
 
 
-def change_fieldsize_for_scrolling():
+def change_fieldsize_for_scrolling():            
     frame1.update()
     frame2.update()
-    widths = [frame1.winfo_width(), frame2.winfo_width()]
-    heights = [frame1.winfo_height(), frame2.winfo_height()]
-    Wid = 1*w//12 + sum(widths)
-    Hei = 1*h//12 + max(heights)
-    canvas1.config(scrollregion=(0, 0, Wid, Hei))
-    frame0.config(width=Wid, height=Hei)
+    frame0.update()
+    canvas1.config(scrollregion=canvas1.bbox(ALL))
 
 
 # Характеристики и опции для управляющих элементов, глобальные переменные
@@ -1027,6 +1020,7 @@ h = 2*window0.winfo_screenheight()//3
 window0.geometry('{}x{}'.format(w, h))
 window0.title("Анализ алгоритмов группового выбора, \
 использующих пути в орграфе")
+window0.update()
 ###
 
 # Задание и первичное размещение управляющих элементов
@@ -1035,7 +1029,8 @@ window0.title("Анализ алгоритмов группового выбор
 # холст
 canvas1 = Canvas(window0,
                  background=window_background,
-                 width=window0.winfo_width(), height=window0.winfo_height(),
+                 confine=True,
+                 width=w, height=w,
                  scrollregion=(0, 0, w, h))
 # скроллбары
 scrollbarY1 = Scrollbar(window0,
@@ -1050,13 +1045,17 @@ canvas1.config(
 scrollbarY1.pack(side=RIGHT, fill=Y)
 scrollbarX1.pack(side=BOTTOM, fill=X)
 canvas1.pack(side=LEFT, expand=YES, fill=BOTH)
+
+
 def on_mousewheel(event):
-    canvas1.yview_scroll(int(-1*(event.delta/100)), "units")
+    if canvas1.winfo_height() < canvas1.bbox("all")[3]:
+        canvas1.yview_scroll(int(-1*(event.delta/80)), "units")
+
+
 canvas1.bind_all("<MouseWheel>", on_mousewheel, add='+')
 
 # главный фрейм
-frame0 = Frame(canvas1, bd=0, background=window_background,
-               width=canvas1.winfo_width(), height=canvas1.winfo_height())
+frame0 = Frame(canvas1, background=window_background)
 canvas1.create_window((0, 0), window=frame0, anchor=NW)
 ###
 
@@ -1127,25 +1126,25 @@ frame1.grid(**grid_optsNW, row=0, column=0)
 frame2 = Frame(master=frame0, **frame_opts)
 frame2.grid(**grid_optsNW, row=0, column=1)
 
-frame1up = Frame(frame1, **frame_opts)
-frame1up.grid(**grid_optsNW, row=0, column=0)
-frame1down = Frame(frame1, **frame_opts)
-frame1down.grid(**grid_optsNW, row=1, column=0)
+frame1top = Frame(frame1, **frame_opts)
+frame1top.grid(**grid_optsNW, row=0, column=0)
+frame1bottom = Frame(frame1, **frame_opts)
+frame1bottom.grid(**grid_optsNW, row=1, column=0)
 
-frame_n_m = LabelFrame(frame1up, **label_opts, text="Выбор n и m")
+frame_n_m = LabelFrame(frame1top, **label_opts, text="Выбор n и m")
 frame_n_m.grid(**grid_optsNW, row=0, column=0)
 
-frame_checkbuttons = LabelFrame(frame1up, **label_opts, text="Выбор метода")
+frame_checkbuttons = LabelFrame(frame1top, **label_opts, text="Выбор метода")
 frame_checkbuttons.grid(**grid_optsW, row=0, column=1)
 
-frame_forfile = LabelFrame(frame1up, **label_opts, text="Импорт из txt-файла")
+frame_forfile = LabelFrame(frame1top, **label_opts, text="Импорт из txt-файла")
 frame_forfile.grid(**grid_optsNSEW, row=1, column=0, columnspan=3)
 
-frame_input_profiles = LabelFrame(frame1down, **label_opts,
+frame_input_profiles = LabelFrame(frame1bottom, **label_opts,
                                   text="Ввод таблицы ранжирований")
 frame_input_profiles.grid(**grid_optsNW, row=0, column=0)
 
-frame_output_all_tables = LabelFrame(frame2, **label_opts, relief='flat',
+frame_output_all_tables = LabelFrame(frame2, **label_opts,
                                      text="Результирующие ранжирования")
 frame_output_all_tables.grid(**grid_optsNW, row=0, column=1)
 
@@ -1225,8 +1224,8 @@ checkbutton5 = Checkbutton(**checkbutton_opts, variable=cb_All_rankings,
                            text="Всевозможные ранжирования",
                            ).pack(**pack_optsTW)
 
-button_read_table = Button(frame1up, **button_opts_disabled,
-                           text="Пуск!",
+button_read_table = Button(frame1top, **button_opts_disabled,
+                           text="Пуск!\n→",
                            command=read_table)
 button_read_table.grid(**grid_optsNSEW, row=0, column=2)
 
@@ -1238,10 +1237,10 @@ button_forfile = Button(frame_forfile, **button_opts_enabled,
                         command=read_file,
                         ).pack(**pack_optsLW)
 
-label_output = Label(frame1, **label_opts,
+label_output = Label(frame1bottom, **label_opts,
                      bg=window_background, justify=LEFT,
                      text="")
-label_output.grid(**grid_optsNW, row=2, column=0)
+label_output.grid(**grid_optsNW, row=1, column=0)
 
 grid_forget_input()
 grid_forget_output()
