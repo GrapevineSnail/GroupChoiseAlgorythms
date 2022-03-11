@@ -1248,7 +1248,7 @@ def run_tests():
     fout.write(directory + "\n\n")
     files = list(filter(lambda s: s[-4:] == ".txt", os.listdir(directory)))
 
-    # определяем количество альтернатив по первой 
+    # определяем количество альтернатив по первой
     # строке любого входного файла с профилями экспертов
     f = open(directory + files[0], 'r')
     n = len(f.readline().replace("\n", "").split())
@@ -1299,7 +1299,7 @@ def run_tests():
                     Params['Schulze_ranking']]
                 num_of_schulze_ranks[0] += 1
 
-        is_rankings_of_method_exist = [ 
+        is_rankings_of_method_exist = [
             0 if rankings == None else 1
             for rankings in Methods_rankings.values()]
 
@@ -1330,7 +1330,6 @@ def run_tests():
         if Intersect not in (None, []):
             return 1
         return 0
-
 
     if rb_method.get() == "":
         messagebox.showinfo("", "Надо выбрать метод.")
@@ -1377,5 +1376,5 @@ button_run_tests.grid(**grid_optsNW, row=3, column=0)
 
 grid_forget_input()
 grid_forget_output()
-###
+
 window0.mainloop()
