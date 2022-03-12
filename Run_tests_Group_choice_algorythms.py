@@ -1273,7 +1273,7 @@ def run_tests():
         HP_max_strength_name:HP_max_strength,
         Schulze_method_name:Schulze_method}
 
-    info = str(method_name) + "\n"
+    info = "<<<<<" + str(method_name) + ">>>>>" + "\n"
     counts = { 'total':0, 'presence_of_median':0, 'schulze_ranks':0 }
     
     All_rankings = All_various_rankings()
@@ -1320,6 +1320,15 @@ def run_tests():
         except Exception as e:
             messagebox.showerror("", "Файл некорректен.\n" + str(e))
 
+
+    def current_information_about_counts():
+        return  str( 
+            "         Всего тестов: {}\n".format(counts['total']) + 
+            "  Ранжирований Шульце: {}\n".format(counts['schulze_ranks']) + 
+            "  Присутствий медианы: {}\n\n".format(counts['presence_of_median'])
+            )
+
+
     if method_name not in (HP_max_length_name, HP_max_strength_name, Schulze_method_name):
         messagebox.showinfo("", "Надо выбрать метод.")
     else:
@@ -1331,15 +1340,10 @@ def run_tests():
             Run_single_test(list_of_profiles)
             counts['total'] += 1
             if counts['total'] % 10000 == 0:
-                fout.write(
-                    "         Всего тестов: {}\n".format(counts['total']) +
-                    "  Присутствий медианы: {}\n\n".format(counts['presence_of_median'])
-                )
-        info += "         Всего тестов: {}\n".format(counts['total'])
-        info += "  Ранжирований Шульце: {}\n".format(counts['schulze_ranks'])
-        info += "  Присутствий медианы: {}\n".format(counts['presence_of_median'])
-        info += "Время выполнения: {}\n\n".format(datetime.datetime.now()-t0)
-        fout.write(info + "\n")
+                info += current_information_about_counts()
+        info += current_information_about_counts()
+        info += "Время выполнения: {}\n==========\n\n".format(datetime.datetime.now()-t0)
+        fout.write(info)
     fout.close()
     print("Время выполнения:", datetime.datetime.now()-t0)
 
