@@ -1,6 +1,7 @@
 import datetime
 import os
 import math
+from statistics import median
 import matplotlib.pyplot as plot
 import matplotlib.patches
 import tkinter as tk
@@ -1198,20 +1199,26 @@ button_read_n_and_m.grid(**pad3, sticky=W+E,
                          row=2, column=0,
                          columnspan=2)
 
-rb_method = StringVar()
-rb_method.set(0)
+HP_max_length_name = 'HP_max_length'
+HP_max_strength_name ='HP_max_strength'
+Schulze_method_name = 'Schulze_method'
+Linear_medians_name = 'Linear_medians'
+All_rankings_name = 'All_rankings'
+
+radbut_method_name = StringVar()
+radbut_method_name.set(0)
 
 checkbutton_opts = {'master': frame_checkbuttons, **label_opts}
-checkbutton1 = Radiobutton(**checkbutton_opts, variable=rb_method,
-                           value='HP_max_length',
+checkbutton1 = Radiobutton(**checkbutton_opts, variable=radbut_method_name,
+                           value=HP_max_length_name,
                            text="Гамильтоновы пути максимальной длины"
                            ).pack(**pack_optsTW)
-checkbutton2 = Radiobutton(**checkbutton_opts, variable=rb_method,
-                           value='HP_max_strength',
+checkbutton2 = Radiobutton(**checkbutton_opts, variable=radbut_method_name,
+                           value=HP_max_strength_name,
                            text="Гамильтоновы пути наибольшей силы",
                            ).pack(**pack_optsTW)
-checkbutton3 = Radiobutton(**checkbutton_opts, variable=rb_method,
-                           value='Schulze_method',
+checkbutton3 = Radiobutton(**checkbutton_opts, variable=radbut_method_name,
+                           value=Schulze_method_name,
                            text="Ранжирование по алгоритму Шульце",
                            ).pack(**pack_optsTW)
 
@@ -1238,12 +1245,18 @@ def run_tests():
     global n, m
     t0 = datetime.datetime.now()
 
-    # directory = "D:/Учёба/ЛАБЫ и др/НИР/Программы/tests_n2_m3/"
-    directory = "D:/Учёба/ЛАБЫ и др/НИР/Программы/tests_n3_m3/"
-    # directory = "D:/Учёба/ЛАБЫ и др/НИР/Программы/tests_n4_m3/"
-    # directory = "D:/Учёба/ЛАБЫ и др/НИР/Программы/tests_n3_m5/"
-    # directory = "D:/Учёба/ЛАБЫ и др/НИР/Программы/tests_n4_m5_part1/"
-    # directory = "D:/Учёба/ЛАБЫ и др/НИР/Программы/tests_n4_m5_part2/"
+    # directory = "D:/github/Tests_for_GCA/tests_n2_m3/"
+    # directory = "D:/github/Tests_for_GCA/tests_n2_m5/"
+    # directory = "D:/github/Tests_for_GCA/tests_n2_m7/"
+
+    directory = "D:/github/Tests_for_GCA/tests_n3_m3/"
+    # directory = "D:/github/Tests_for_GCA/tests_n3_m5/"
+    # directory = "D:/github/Tests_for_GCA/tests_n3_m7/"
+
+    # directory = "D:/github/Tests_for_GCA/tests_n4_m3/"
+    # directory = "D:/github/Tests_for_GCA/tests_n4_m5_part1/"
+    # directory = "D:/github/Tests_for_GCA/tests_n4_m5_part2/"
+
     fout = open(os.getcwd()+'\stats.txt', 'a')
     fout.write(directory + "\n\n")
     files = list(filter(lambda s: s[-4:] == ".txt", os.listdir(directory)))
@@ -1253,23 +1266,20 @@ def run_tests():
     f = open(directory + files[0], 'r')
     n = len(f.readline().replace("\n", "").split())
     f.close()
+    
+    method_name = radbut_method_name.get()
+    Methods_functions = {
+        HP_max_length_name:HP_max_strength, 
+        HP_max_strength_name:HP_max_strength,
+        Schulze_method_name:Schulze_method}
 
-    Methods_rankings = {
-        'HP_max_length': None,
-        'HP_max_strength': None,
-        'Schulze_method': None,
-        'Linear_medians': None,
-        'All_rankings': All_various_rankings()
-    }
+    info = str(method_name) + "\n"
+    counts = { 'total':0, 'presence_of_median':0, 'schulze_ranks':0 }
+    
+    All_rankings = All_various_rankings()
+    all_rankings_cnt = len(All_rankings)
 
-    all_rankings_cnt = len(Methods_rankings['All_rankings'])
-
-    info = str(rb_method.get()) + "\n"
-    enumerator: int = 0
-    total: int = 0
-    num_of_schulze_ranks = [0]
-
-    def Linear_medians(R_list, All_rankings):
+    def Linear_medians(R_list):
         Distances = Paths_sum_Hamming_distances_list(All_rankings, R_list)
         median_dist = min(Distances)
         Rankings = [
@@ -1279,91 +1289,55 @@ def run_tests():
 
     def Run_single_test(list_of_profiles):
         R_list, P, C, R = Make_used_matrices(list_of_profiles)
-        Params = {
-            'R_list': R_list, 'P': P, 'C': C, 'R': R,
-            'median_dist': None,
-            'Schulze_ranking': None,
-            'Schulze_winners': None}
-        Methods_rankings['Linear_medians'], Params['median_dist'] = \
-            Linear_medians(R_list, Methods_rankings['All_rankings'])
+        _useless, median_dist = Linear_medians(R_list)
+        Schulze_ranking = None
+        Methods_rankings = None
 
-        if rb_method.get() == 'HP_max_length':
-            Methods_rankings['HP_max_length'] = HP_max_length(C)
-        elif rb_method.get() == 'HP_max_strength':
-            Methods_rankings['HP_max_strength'] = HP_max_strength(C)
-        elif rb_method.get() == 'Schulze_method':
-            Params['Schulze_winners'], Params['Schulze_ranking'] = \
-                Schulze_method(C)
-            if Params['Schulze_ranking'] != None:
-                Methods_rankings['Schulze_method'] = [
-                    Params['Schulze_ranking']]
-                num_of_schulze_ranks[0] += 1
+        if method_name == Schulze_method_name:
+            Schulze_winners, Schulze_ranking = Methods_functions[method_name](C)
+            if Schulze_ranking != None:
+                Methods_rankings = [Schulze_ranking]
+                counts['schulze_ranks'] += 1
+        else:
+            Methods_rankings = Methods_functions[method_name](C)
+        
+        if Methods_rankings != None and np.any([ 
+            True if path_dist == median_dist else False 
+            for path_dist in Paths_sum_Hamming_distances_list(Methods_rankings, R_list)]):
+            counts['presence_of_median'] += 1
 
-        is_rankings_of_method_exist = [
-            0 if rankings == None else 1
-            for rankings in Methods_rankings.values()]
+    def take_list_of_profiles_from_single_file(filename):
+        try:
+            list_of_profiles = []
+            f = open(directory + filename, 'r')
+            strings = f.readlines()
+            f.close()
+            for s in strings:
+                list_of_profiles.append(list(map(symbol2index, s.split())))
+            return list_of_profiles
+        except FileNotFoundError:
+            messagebox.showerror("", "Файл не найден")
+        except Exception as e:
+            messagebox.showerror("", "Файл некорректен.\n" + str(e))
 
-        Intersect = None
-        if sum(is_rankings_of_method_exist) > 1:
-            separator = "*"
-
-            def list2symbolic_string(l):
-                s = ""
-                if l == []:
-                    return s
-                for e in l:
-                    s += str(e) + separator
-                return s[:-len(separator)]
-
-            def symbolic_string2list(s):
-                l = [int(e) for e in s.split(separator)]
-                return l
-            Sets = [
-                set(
-                    list2symbolic_string(ranking)
-                    for ranking in single_method_rankings if ranking != None)
-                for single_method_rankings in Methods_rankings.values()
-                if single_method_rankings not in ([], [[]], None)]
-            if Sets not in ([], None):
-                Intersect = set.intersection(*Sets)
-                Intersect = [symbolic_string2list(s) for s in Intersect]
-        if Intersect not in (None, []):
-            return 1
-        return 0
-
-    if rb_method.get() == "":
+    if method_name not in (HP_max_length_name, HP_max_strength_name, Schulze_method_name):
         messagebox.showinfo("", "Надо выбрать метод.")
     else:
         for filename in files:
             print(filename)
-            list_of_profiles = []
-            try:
-                list_of_profiles = []
-                f = open(directory + filename, 'r')
-                strings = f.readlines()
-                f.close()
-                for s in strings:
-                    s.replace("\n", "")
-                    list_ = list(map(symbol2index, s.split()))
-                    if list_ != []:
-                        list_of_profiles.append(list_)
-            except FileNotFoundError:
-                messagebox.showerror("", "Файл не найден")
-            except Exception as e:
-                messagebox.showerror("", "Файл некорректен.\n" + str(e))
-            else:
-                m = len(list_of_profiles)
-                n = len(list_of_profiles[0])
-                enumerator += Run_single_test(list_of_profiles)
-                total += 1
-                if total % 10000 == 0:
-                    fout.write(
-                        "         Всего тестов: {}\n".format(total) +
-                        "  Присутствий медианы: {}\n\n".format(enumerator)
-                    )
-        info += "         Всего тестов: {}\n".format(total)
-        info += "  Ранжирований Шульце: {}\n".format(num_of_schulze_ranks[0])
-        info += "  Присутствий медианы: {}\n".format(enumerator)
+            list_of_profiles = take_list_of_profiles_from_single_file(filename)
+            m = len(list_of_profiles)
+            n = len(list_of_profiles[0])
+            Run_single_test(list_of_profiles)
+            counts['total'] += 1
+            if counts['total'] % 10000 == 0:
+                fout.write(
+                    "         Всего тестов: {}\n".format(counts['total']) +
+                    "  Присутствий медианы: {}\n\n".format(counts['presence_of_median'])
+                )
+        info += "         Всего тестов: {}\n".format(counts['total'])
+        info += "  Ранжирований Шульце: {}\n".format(counts['schulze_ranks'])
+        info += "  Присутствий медианы: {}\n".format(counts['presence_of_median'])
         info += "Время выполнения: {}\n\n".format(datetime.datetime.now()-t0)
         fout.write(info + "\n")
     fout.close()
