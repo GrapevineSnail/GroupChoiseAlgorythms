@@ -1249,11 +1249,11 @@ def run_tests():
     # directory = "D:/github/Tests_for_GCA/tests_n2_m5/"
     # directory = "D:/github/Tests_for_GCA/tests_n2_m7/"
 
-    directory = "D:/github/Tests_for_GCA/tests_n3_m3/"
+    # directory = "D:/github/Tests_for_GCA/tests_n3_m3/"
     # directory = "D:/github/Tests_for_GCA/tests_n3_m5/"
     # directory = "D:/github/Tests_for_GCA/tests_n3_m7/"
 
-    # directory = "D:/github/Tests_for_GCA/tests_n4_m3/"
+    directory = "D:/github/Tests_for_GCA/tests_n4_m3/"
     # directory = "D:/github/Tests_for_GCA/tests_n4_m5_part1/"
     # directory = "D:/github/Tests_for_GCA/tests_n4_m5_part2/"
 
