@@ -1268,7 +1268,7 @@ def run_tests():
     
     method_name = radbut_method_name.get()
     Methods_functions = {
-        HP_max_length_name:HP_max_strength, 
+        HP_max_length_name:HP_max_length, 
         HP_max_strength_name:HP_max_strength,
         Schulze_method_name:Schulze_method}
 
