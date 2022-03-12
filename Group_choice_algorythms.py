@@ -496,17 +496,17 @@ def Schulze_method(Weights_matrix):
 
 def Execute_algorythms(list_of_profiles):
     names = [
-        'HP_max_length',
-        'HP_max_strength',
-        'Schulze_method',
-        'Linear_medians',
-        'All_rankings']
+        HP_max_length_name,
+        HP_max_strength_name,
+        Schulze_method_name,
+        Linear_medians_name,
+        All_rankings_name]
     frames = [
-        frame_table_HP_max_length,
-        frame_table_HP_max_strength,
-        frame_table_Schulze_method,
-        frame_table_Linear_medians,
-        frame_table_All_rankings]
+        frame_HP_max_length_table,
+        frame_HP_max_strength_table,
+        frame_Schulze_method_table,
+        frame_Linear_medians_table,
+        frame_All_rankings_table]
     checkbuttons = [
         cb_HP_max_length.get(),
         cb_HP_max_strength.get(),
@@ -533,21 +533,21 @@ def Execute_algorythms(list_of_profiles):
 
     if sum(checkbuttons):
         _useless, Params['median_dist'] = Linear_medians(R_list)
-        if Methods_checkbuttons['HP_max_length']:
-            Methods_rankings['HP_max_length'] = HP_max_length(C)
-        if Methods_checkbuttons['HP_max_strength']:
-            Methods_rankings['HP_max_strength'] = HP_max_strength(C)
-        if Methods_checkbuttons['Schulze_method']:
+        if Methods_checkbuttons[HP_max_length_name]:
+            Methods_rankings[HP_max_length_name] = HP_max_length(C)
+        if Methods_checkbuttons[HP_max_strength_name]:
+            Methods_rankings[HP_max_strength_name] = HP_max_strength(C)
+        if Methods_checkbuttons[Schulze_method_name]:
             Params['Schulze_winners'], Params['Schulze_ranking'] = \
                 Schulze_method(C)
             if Params['Schulze_ranking'] != None:
-                Methods_rankings['Schulze_method'] = [ 
+                Methods_rankings['Schulze_method'] = [
                     Params['Schulze_ranking']]
-        if Methods_checkbuttons['Linear_medians']:
-            Methods_rankings['Linear_medians'], Params['median_dist'] =  \
+        if Methods_checkbuttons[Linear_medians_name]:
+            Methods_rankings[Linear_medians_name], Params['median_dist'] =  \
                 Linear_medians(R_list)
-        if Methods_checkbuttons['All_rankings']:
-            Methods_rankings['All_rankings'] = All_various_rankings()
+        if Methods_checkbuttons[All_rankings_name]:
+            Methods_rankings[All_rankings_name] = All_various_rankings()
 
         is_rankings_of_method_exist = [
             0 if rankings == None else 1
@@ -584,7 +584,6 @@ def Execute_algorythms(list_of_profiles):
         messagebox.showwarning("", "Выберите метод")
 
 
-###
 def index2symbol(index, max_index):
     if max_index > 25:
         return str(index + 1)
@@ -642,7 +641,6 @@ def matrix2string(Matrix):  # для удобства печати матриц
         string += '\n'
     string = string[:-1]
     return string
-###
 
 
 def draw_result_rankings(
@@ -662,7 +660,7 @@ def draw_result_rankings(
             new_table_output(Methods_frames[name], Result_rankings,
                              Lengths, Strengths, Distances,
                              Params['median_dist'], Mutual_rankings)
-        if name == 'Schulze_method' and Params['Schulze_winners'] != None:
+        if name == Schulze_method_name and Params['Schulze_winners'] != None:
             draw_winners(Methods_frames[name],
                          Params['Schulze_winners'], Params['Schulze_ranking'])
 
@@ -797,7 +795,7 @@ def new_table_output(frame_of_method, Result_rankings,
 
 
 def new_table_input():
-    global table_input, labels_captions_top_inp, labels_captions_left_inp, table_fromfile
+    global table_input, labels_captions_top_inp, labels_captions_left_inp, list_of_profiles
     try:
         spinbox_n.set(str(n))
         spinbox_m.set(str(m))
@@ -805,61 +803,61 @@ def new_table_input():
         pass
     table_frame = frame_input_profiles
     # задание управляющих элементов
-    labels_captions_top_inp = [Label(table_frame, **label_smallfont_opts,
-                                     **border_opts,
-                                     text="Эксперт {0}".format(j+1))
-                               for j in range(m)]
-    labels_captions_left_inp = [Label(table_frame, **label_opts, **border_opts,
-                                      text="Место {0}".format(i+1))
-                                for i in range(n)]
-    table_input = [[ttk.Combobox(table_frame, **input_field_opts, width=4,
-                                 values=[index2symbol(i, n-1)
-                                         for i in range(n)],
-                                 state="readonly")
-                    for j in range(m)]
-                   for i in range(n)]
+    labels_captions_top_inp = [
+        Label(table_frame, **label_smallfont_opts, **border_opts,
+              text="Эксперт {0}".format(j+1))
+        for j in range(m)]
+    labels_captions_left_inp = [
+        Label(table_frame, **label_opts, **border_opts,
+              text="Место {0}".format(i+1))
+        for i in range(n)]
+    table_input = [[
+        ttk.Combobox(table_frame, **input_field_opts, width=4,
+                     values=[index2symbol(ii, n-1) for ii in range(n)],
+                     state="readonly")
+        for j in range(m)]
+        for i in range(n)]
     for j in range(m):
         for i in range(n):
             table_input[i][j].current(i)
-    if 'table_fromfile' in globals() and len(table_fromfile) > 0:
+    if 'list_of_profiles' in globals() and len(list_of_profiles) > 0:
         for i in range(n):
             for j in range(m):
-                table_input[i][j].current(table_fromfile[i][j])
-        table_fromfile = []
+                table_input[i][j].current(list_of_profiles[i][j])
+        list_of_profiles = []
     button_read_table.config(**button_opts_enabled)
     grid_input_table()
 
 
 def read_file():
-    global n, m, table_fromfile
-    table_fromfile = []
+    global n, m, list_of_profiles
+    list_of_profiles = []
     s = entry_forfile.get()
     try:
-        table_fromfile = []
+        list_of_profiles = []
         f = open(s, 'r')
         strings = f.readlines()
         f.close()
         for s in strings:
-            s.replace("\n", "")
-            list_ = list(map(symbol2index, s.split()))
-            if list_ != []:
-                table_fromfile.append(list_)
-        if len(table_fromfile) == 0:
+            List = list(map(symbol2index, s.split()))
+            if List != []:
+                list_of_profiles.append(List)
+        if len(list_of_profiles) == 0:
             raise ValueError("Пустой файл")
-        nn = len(table_fromfile[0])
-        for list_ in table_fromfile:
-            if len(list_) != nn:
+        nn = len(list_of_profiles[0])
+        for List in list_of_profiles:
+            if len(List) != nn:
                 raise ValueError("Неверная длина строк")
-        if max(list(map(max, table_fromfile))) >= nn:
+        if max(list(map(max, list_of_profiles))) >= nn:
             raise ValueError("Неверное обозначение альтернативы")
     except FileNotFoundError:
         messagebox.showerror("", "Файл не найден")
     except Exception as e:
         messagebox.showerror("", "Файл некорректен.\n" + str(e))
     else:
-        m = len(table_fromfile)
+        m = len(list_of_profiles)
         n = nn
-        table_fromfile = np.array(table_fromfile).transpose().tolist()
+        list_of_profiles = np.array(list_of_profiles).transpose().tolist()
         grid_forget_output()
         grid_forget_input()
         new_table_input()
@@ -913,16 +911,22 @@ def grid_forget_output():  # уборка управляющих элемент�
 def grid_input_table():  # размещение управляющих элементов
     global labels_captions_top_inp, labels_captions_left_inp, \
         table_input
-    if 'labels_captions_top_inp' in globals():
+    try:
         for j in range(len(labels_captions_top_inp)):
             labels_captions_top_inp[j].grid(**pad0, row=0, column=j+1)
-    if 'labels_captions_left_inp' in globals():
+    except NameError:
+        pass
+    try:
         for i in range(len(labels_captions_left_inp)):
             labels_captions_left_inp[i].grid(**pad0, row=i+1, column=0)
-    if 'table_input' in globals():
+    except NameError:
+        pass
+    try:
         for i in range(len(table_input)):
             for j in range(len(table_input[i])):
                 table_input[i][j].grid(**pad0, row=i+1, column=j+1)
+    except NameError:
+        pass
     frame_input_profiles.grid()
     change_fieldsize_for_scrolling()
 
@@ -931,25 +935,35 @@ def grid_input_table():  # размещение управляющих элем�
 def grid_output_table(frame_of_particular_method: Widget):
     global labels_captions_top_out, labels_captions_left_out, \
         table_output, labels_info_out, table_info_output
-    if 'labels_captions_top_out' in globals():
+    try:
         for j in range(len(labels_captions_top_out)):
             labels_captions_top_out[j].grid(**pad0, row=0, column=j+1)
-    if 'labels_captions_left_out' in globals():
+    except NameError:
+        pass
+    try:
         n = len(labels_captions_left_out)
         for i in range(n):
             labels_captions_left_out[i].grid(
                 **pad0, sticky=E, row=i+1, column=0)
-        if 'labels_info_out' in globals():
+        try:
             for i in range(3):
                 labels_info_out[i].grid(**grid_optsE, row=n+1+i, column=0)
-    if 'table_output' in globals():
+        except NameError:
+            pass
+    except NameError:
+        pass
+    try:
         for i in range(len(table_output)):
             for j in range(len(table_output[i])):
                 table_output[i][j].grid(**pad0, row=i+1, column=j+1)
-    if 'table_info_output' in globals():
+    except NameError:
+        pass
+    try:
         for i in range(len(table_info_output)):
             for j in range(len(table_info_output[i])):
                 table_info_output[i][j].grid(**pad0, row=n+1+i, column=j+1)
+    except NameError:
+        pass
     frame_of_particular_method.grid()
     frame_output_all_tables.grid()
     if label_output['text'] != "":
@@ -957,7 +971,7 @@ def grid_output_table(frame_of_particular_method: Widget):
     change_fieldsize_for_scrolling()
 
 
-def change_fieldsize_for_scrolling():            
+def change_fieldsize_for_scrolling():
     frame1.update()
     frame2.update()
     frame0.update()
@@ -1023,8 +1037,6 @@ window0.title("Анализ алгоритмов группового выбор
 window0.update()
 ###
 
-# Задание и первичное размещение управляющих элементов
-
 # Для скорллинга
 # холст
 canvas1 = Canvas(window0,
@@ -1032,6 +1044,15 @@ canvas1 = Canvas(window0,
                  confine=True,
                  width=w, height=w,
                  scrollregion=(0, 0, w, h))
+
+
+def on_mousewheel(event):
+    if canvas1.winfo_height() < canvas1.bbox("all")[3]:
+        canvas1.yview_scroll(int(-1*(event.delta/80)), "units")
+
+
+canvas1.bind_all("<MouseWheel>", on_mousewheel, add='+')
+
 # скроллбары
 scrollbarY1 = Scrollbar(window0,
                         command=canvas1.yview,
@@ -1046,20 +1067,12 @@ scrollbarY1.pack(side=RIGHT, fill=Y)
 scrollbarX1.pack(side=BOTTOM, fill=X)
 canvas1.pack(side=LEFT, expand=YES, fill=BOTH)
 
-
-def on_mousewheel(event):
-    if canvas1.winfo_height() < canvas1.bbox("all")[3]:
-        canvas1.yview_scroll(int(-1*(event.delta/80)), "units")
-
-
-canvas1.bind_all("<MouseWheel>", on_mousewheel, add='+')
-
 # главный фрейм
 frame0 = Frame(canvas1, background=window_background)
 canvas1.create_window((0, 0), window=frame0, anchor=NW)
 ###
 
-# Управляющие элементы
+# Управляющие элементы (задание и первичное размещение)
 info_file = "Текстовый файл должен содержать m значимых (не пробельных) \
 строк. Переводов строк и пробелов может быть сколько угодно. \
 В одной строке должен быть записан профиль одного эксперта: \
@@ -1072,6 +1085,7 @@ info_file = "Текстовый файл должен содержать m зн�
 при нажатии кнопки 'Ввод из файла' будет выдана ошибка 'файл не найден'. \
 \nФормат имени файла: 'file_name.txt' (без кавычек). \
 \nВ таком же виде нужно писать имя в поле для имени файла."
+
 info_input = "Добро пожаловать в программу!\n\n\
 Ввести профили предпочтений экспертов можно через текстовый файл или \
 последовательно задавая: n - число альтернатив-кандидиатов, m - число \
@@ -1088,6 +1102,7 @@ info_input = "Добро пожаловать в программу!\n\n\
 если файл прочитан. \
 \nПосле ввода профилей можно нажать кнопку 'Пуск', перед этим выбрав \
 методы (поставить галочки), которые хотели бы запустить."
+
 info_output = "После нажатия 'Пуска' с правой стороны должны появиться \
 результирующие ранжирования и информация к ним. \
 \nПод таблицей для ввода пишется минимально возможное суммарное \
@@ -1102,11 +1117,11 @@ info_output = "После нажатия 'Пуска' с правой сторо
 \nДля каждого метода - для его списка ранжирований используется цветная \
 подсветка. Данная характеристика - это либо длина, либо сила, либо \
 расстояние. \
-\n Синий - минимум по данной характеристике среди ранжирований данного \
+\nСиний - минимум по данной характеристике среди ранжирований данного \
 метода. \
-\n Розовый - максимум по данной характеристике среди ранжирований данного \
+\nРозовый - максимум по данной характеристике среди ранжирований данного \
 метода. \
-\n Зелёным цветом указаны те ранжирования, которые были выданы \
+\nЗелёным цветом указаны те ранжирования, которые были выданы \
 одновременно всеми выбранными методами, имеющими ранжирования. \
 \nНапример, если у Шульце нет ранжирований, а мы выбрали три метода, \
 включая Шульце, то зелёным будут подсвечены ранжирования, которые \
@@ -1148,21 +1163,21 @@ frame_output_all_tables = LabelFrame(frame2, **label_opts,
                                      text="Результирующие ранжирования")
 frame_output_all_tables.grid(**grid_optsNW, row=0, column=1)
 
-frame_table_HP_max_length = LabelFrame(frame_output_all_tables, **label_opts,
+frame_HP_max_length_table = LabelFrame(frame_output_all_tables, **label_opts,
                                        text="Гамильтоновы пути максимальной длины")
-frame_table_HP_max_length.grid(**grid_optsNW, row=0, column=0)
-frame_table_HP_max_strength = LabelFrame(frame_output_all_tables, **label_opts,
+frame_HP_max_length_table.grid(**grid_optsNW, row=0, column=0)
+frame_HP_max_strength_table = LabelFrame(frame_output_all_tables, **label_opts,
                                          text="Гамильтоновы пути наибольшей силы")
-frame_table_HP_max_strength.grid(**grid_optsNW, row=1, column=0)
-frame_table_Schulze_method = LabelFrame(frame_output_all_tables, **label_opts,
+frame_HP_max_strength_table.grid(**grid_optsNW, row=1, column=0)
+frame_Schulze_method_table = LabelFrame(frame_output_all_tables, **label_opts,
                                         text="Ранжирование по алгоритму Шульце")
-frame_table_Schulze_method.grid(**grid_optsNW, row=2, column=0)
-frame_table_Linear_medians = LabelFrame(frame_output_all_tables, **label_opts,
+frame_Schulze_method_table.grid(**grid_optsNW, row=2, column=0)
+frame_Linear_medians_table = LabelFrame(frame_output_all_tables, **label_opts,
                                         text="Линейные медианы")
-frame_table_Linear_medians.grid(**grid_optsNW, row=3, column=0)
-frame_table_All_rankings = LabelFrame(frame_output_all_tables, **label_opts,
+frame_Linear_medians_table.grid(**grid_optsNW, row=3, column=0)
+frame_All_rankings_table = LabelFrame(frame_output_all_tables, **label_opts,
                                       text="Всевозможные ранжирования")
-frame_table_All_rankings.grid(**grid_optsNW, row=4, column=0)
+frame_All_rankings_table.grid(**grid_optsNW, row=4, column=0)
 
 label1 = Label(frame_n_m, **label_opts, text="Число n альтернатив")
 label1.grid(**grid_optsW,
@@ -1194,6 +1209,12 @@ button_read_n_and_m = Button(frame_n_m, **button_opts_enabled,
 button_read_n_and_m.grid(**pad3, sticky=W+E,
                          row=2, column=0,
                          columnspan=2)
+
+HP_max_length_name = 'HP_max_length'
+HP_max_strength_name = 'HP_max_strength'
+Schulze_method_name = 'Schulze_method'
+Linear_medians_name = 'Linear_medians'
+All_rankings_name = 'All_rankings'
 
 cb_HP_max_length = IntVar()
 cb_HP_max_strength = IntVar()
@@ -1244,5 +1265,5 @@ label_output.grid(**grid_optsNW, row=1, column=0)
 
 grid_forget_input()
 grid_forget_output()
-###
+
 window0.mainloop()
