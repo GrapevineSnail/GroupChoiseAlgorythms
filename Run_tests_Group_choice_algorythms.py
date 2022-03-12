@@ -1258,7 +1258,7 @@ def run_tests():
     # directory = "D:/github/Tests_for_GCA/tests_n4_m5_part2/"
 
     fout = open(os.getcwd()+'\stats.txt', 'a')
-    fout.write(directory + "\n\n")
+    fout.write(directory + "\n")
     files = list(filter(lambda s: s[-4:] == ".txt", os.listdir(directory)))
 
     # определяем количество альтернатив по первой
@@ -1273,7 +1273,7 @@ def run_tests():
         HP_max_strength_name:HP_max_strength,
         Schulze_method_name:Schulze_method}
 
-    info = "<<<<<" + str(method_name) + ">>>>>" + "\n"
+    info = "<<<<< " + str(method_name) + " >>>>>" + "\n"
     counts = { 'total':0, 'presence_of_median':0, 'schulze_ranks':0 }
     
     All_rankings = All_various_rankings()
@@ -1342,7 +1342,7 @@ def run_tests():
             if counts['total'] % 10000 == 0:
                 info += current_information_about_counts()
         info += current_information_about_counts()
-        info += "Время выполнения: {}\n==========\n\n".format(datetime.datetime.now()-t0)
+        info += "Время выполнения: {}\n==========\n\n\n".format(datetime.datetime.now()-t0)
         fout.write(info)
     fout.close()
     print("Время выполнения:", datetime.datetime.now()-t0)
