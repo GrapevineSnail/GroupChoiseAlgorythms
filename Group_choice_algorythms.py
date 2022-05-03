@@ -11,6 +11,7 @@ import numpy as np
 import sympy
 import inspect
 import itertools
+import os
 
 
 def visualize_graph(Weights_matrix, path):
