@@ -580,7 +580,7 @@ def Execute_algorythms(list_of_profiles):
                 Intersect = [symbolic_string2list(s) for s in Intersect]
         draw_result_rankings(Params, Methods_frames,
                              Methods_rankings, Intersect)
-##        visualize_graph(C, None)
+        visualize_graph(C, None) #
     else:
         messagebox.showwarning("", "Выберите метод")
 
