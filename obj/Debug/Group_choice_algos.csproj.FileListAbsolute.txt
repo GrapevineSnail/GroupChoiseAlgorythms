@@ -1,0 +1,30 @@
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.AssemblyReference.cache
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\obj\Debug\Group_choice_algos.Form1.resources
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\obj\Debug\Group_choice_algos.Properties.Resources.resources
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.GenerateResource.cache
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.CoreCompileInputs.cache
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\bin\Debug\Group_choice_algos.exe.config
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\bin\Debug\Group_choice_algos.exe
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\bin\Debug\Group_choice_algos.pdb
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\obj\Debug\Group_choice_algos.exe
+D:\Учёба\ЛАБЫ и др\Group_choice_algos\obj\Debug\Group_choice_algos.pdb
+D:\Group_choice_algos\bin\Debug\Group_choice_algos.exe.config
+D:\Group_choice_algos\bin\Debug\Group_choice_algos.exe
+D:\Group_choice_algos\bin\Debug\Group_choice_algos.pdb
+D:\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.AssemblyReference.cache
+D:\Group_choice_algos\obj\Debug\Group_choice_algos.Form1.resources
+D:\Group_choice_algos\obj\Debug\Group_choice_algos.Properties.Resources.resources
+D:\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.GenerateResource.cache
+D:\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.CoreCompileInputs.cache
+D:\Group_choice_algos\obj\Debug\Group_choice_algos.exe
+D:\Group_choice_algos\obj\Debug\Group_choice_algos.pdb
+D:\Group_choice_algos_csh\Group_choice_algos\bin\Debug\Group_choice_algos.exe.config
+D:\Group_choice_algos_csh\Group_choice_algos\bin\Debug\Group_choice_algos.exe
+D:\Group_choice_algos_csh\Group_choice_algos\bin\Debug\Group_choice_algos.pdb
+D:\Group_choice_algos_csh\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.AssemblyReference.cache
+D:\Group_choice_algos_csh\Group_choice_algos\obj\Debug\Group_choice_algos.Form1.resources
+D:\Group_choice_algos_csh\Group_choice_algos\obj\Debug\Group_choice_algos.Properties.Resources.resources
+D:\Group_choice_algos_csh\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.GenerateResource.cache
+D:\Group_choice_algos_csh\Group_choice_algos\obj\Debug\Group_choice_algos.csproj.CoreCompileInputs.cache
+D:\Group_choice_algos_csh\Group_choice_algos\obj\Debug\Group_choice_algos.exe
+D:\Group_choice_algos_csh\Group_choice_algos\obj\Debug\Group_choice_algos.pdb
